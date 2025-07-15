@@ -11,14 +11,14 @@ interface ClientLayoutProps {
 
 export default async function ClientLayout({ children, params }: ClientLayoutProps) {
   const { id } = await params
-  const { userId, sessionClaims } = auth()
+  const { userId, sessionClaims } = await auth()
   
   if (!userId) {
     redirect('/sign-in')
   }
 
-  const role = sessionClaims?.publicMetadata?.role as string | string[]
-  const userClientId = sessionClaims?.publicMetadata?.clientId as string
+  const role = (sessionClaims?.publicMetadata as { role?: string | string[]; clientId?: string })?.role as string | string[]
+  const userClientId = (sessionClaims?.publicMetadata as { role?: string | string[]; clientId?: string })?.clientId as string
   
   // Handle multiple roles - convert to array for consistent processing
   const roles = Array.isArray(role) ? role : (role ? [role] : [])

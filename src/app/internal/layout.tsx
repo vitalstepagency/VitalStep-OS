@@ -9,13 +9,13 @@ interface InternalLayoutProps {
 }
 
 export default async function InternalLayout({ children }: InternalLayoutProps) {
-  const { userId, sessionClaims } = auth()
+  const { userId, sessionClaims } = await auth()
   
   if (!userId) {
     redirect('/sign-in')
   }
 
-  const role = sessionClaims?.publicMetadata?.role as string | string[]
+  const role = (sessionClaims?.publicMetadata as { role?: string | string[] })?.role as string | string[]
   
   // Handle multiple roles - convert to array for consistent processing
   const roles = Array.isArray(role) ? role : (role ? [role] : [])

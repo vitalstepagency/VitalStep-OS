@@ -19,8 +19,8 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   if (userId && sessionClaims) {
-    const role = sessionClaims.publicMetadata?.role as string | string[]
-    const clientId = sessionClaims.publicMetadata?.clientId as string
+    const role = (sessionClaims.publicMetadata as { role?: string | string[]; clientId?: string })?.role as string | string[]
+    const clientId = (sessionClaims.publicMetadata as { role?: string | string[]; clientId?: string })?.clientId as string
     
     // Handle multiple roles - convert to array for consistent processing
     const roles = Array.isArray(role) ? role : (role ? [role] : [])
