@@ -3,10 +3,9 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+
 import { 
   BarChart3, 
-  Target, 
   Users, 
   Calendar, 
   FileText, 
@@ -17,13 +16,9 @@ import {
   Home,
   TrendingUp,
   MessageSquare,
-  Bell,
   Download,
-  Zap,
-  Star,
   Activity,
-  Rocket,
-  Shield
+  Rocket
 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'

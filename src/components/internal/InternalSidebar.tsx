@@ -20,11 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Target,
-  Zap,
-  Database,
-  Clock,
   CheckCircle,
-  TrendingUp,
   Layers
 } from 'lucide-react'
 

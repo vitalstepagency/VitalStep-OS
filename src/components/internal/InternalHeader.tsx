@@ -10,14 +10,9 @@ import {
   Bell, 
   Settings, 
   Command, 
-  Zap, 
-  Users, 
-  Activity, 
   Target,
   ChevronDown,
   Plus,
-  Filter,
-  Clock,
   CheckCircle,
   Rocket
 } from 'lucide-react'
