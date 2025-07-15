@@ -23,8 +23,7 @@ import {
   Workflow,
   CreditCard,
   UserCheck,
-  Building,
-  Briefcase
+  Building
 } from 'lucide-react'
 
 const navigation = [

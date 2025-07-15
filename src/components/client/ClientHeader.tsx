@@ -13,11 +13,9 @@ import {
   Download, 
   MessageSquare,
   ChevronDown,
-  Star,
   TrendingUp,
   Target,
   Users,
-  ExternalLink,
   HelpCircle,
   Zap
 } from 'lucide-react'

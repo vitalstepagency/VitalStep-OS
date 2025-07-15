@@ -12,11 +12,8 @@ import {
   Command, 
   Zap, 
   Globe, 
-  Activity, 
-  Shield,
-  ChevronDown,
-  Plus,
-  Filter
+  Activity,
+  ChevronDown
 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 
