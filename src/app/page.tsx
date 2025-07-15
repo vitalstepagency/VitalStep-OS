@@ -2,7 +2,7 @@
 
 import { useUser, SignInButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function Home() {
