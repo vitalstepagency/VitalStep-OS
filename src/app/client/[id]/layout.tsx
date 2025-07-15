@@ -6,10 +6,11 @@ import { ClientHeader } from '@/components/client/ClientHeader'
 
 interface ClientLayoutProps {
   children: ReactNode
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default async function ClientLayout({ children, params }: ClientLayoutProps) {
+  const { id } = await params
   const { userId, sessionClaims } = auth()
   
   if (!userId) {
@@ -34,7 +35,7 @@ export default async function ClientLayout({ children, params }: ClientLayoutPro
   }
   
   // If user is client or client_team, ensure they can only access their own client dashboard
-  if (!isAdmin && isClient && userClientId !== params.id) {
+  if (!isAdmin && isClient && userClientId !== id) {
     redirect(`/client/${userClientId}`)
   }
 

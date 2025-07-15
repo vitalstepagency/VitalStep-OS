@@ -1,5 +1,5 @@
 import { headers } from 'next/headers'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { Webhook } from 'svix'
 import { createClerkClient } from '@clerk/nextjs/server'
 
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   // Create a new Svix instance with your secret.
   const wh = new Webhook(webhookSecret)
 
-  let evt: any
+  let evt: { type: string; data: { id: string } }
 
   // Verify the payload with the headers
   try {
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       'svix-id': svix_id,
       'svix-timestamp': svix_timestamp,
       'svix-signature': svix_signature,
-    }) as any
+    }) as { type: string; data: { id: string } }
   } catch (err) {
     console.error('Error verifying webhook:', err)
     return new Response('Error occured', {

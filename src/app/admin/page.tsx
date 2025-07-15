@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -9,25 +9,22 @@ import {
   DollarSign, 
   TrendingUp, 
   Activity, 
-  Zap, 
   Globe, 
   Shield, 
   BarChart3,
   ArrowUpRight,
   ArrowDownRight,
   Eye,
-  Settings,
   Plus,
   Brain,
   Sparkles,
   Cpu,
-  Layers,
   Network,
   Orbit,
   Atom,
   Hexagon
 } from 'lucide-react'
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 const revenueData = [
   { month: 'Jan', revenue: 45000, clients: 12 },

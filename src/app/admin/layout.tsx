@@ -15,7 +15,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     redirect('/sign-in')
   }
 
-  const role = sessionClaims?.publicMetadata?.role as string | string[]
+  const role = (sessionClaims?.publicMetadata as { role?: string | string[] })?.role
   
   // Handle multiple roles - convert to array for consistent processing
   const roles = Array.isArray(role) ? role : (role ? [role] : [])

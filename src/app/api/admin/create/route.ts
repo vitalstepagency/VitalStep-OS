@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     // Create the user
     const user = await clerkClient.users.createUser({
-      emailAddresses: [{ emailAddress: email }],
+      emailAddress: [email],
       password,
       firstName: firstName || 'Admin',
       lastName: lastName || 'User',
@@ -27,11 +27,12 @@ export async function POST(req: NextRequest) {
       message: 'Admin user created successfully',
       userId: user.id 
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating admin user:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json({ 
       error: 'Failed to create admin user', 
-      details: error.message 
+      details: errorMessage 
     }, { status: 500 })
   }
 }

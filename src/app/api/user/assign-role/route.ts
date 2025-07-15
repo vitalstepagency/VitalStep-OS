@@ -6,7 +6,7 @@ const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY 
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Prepare metadata update
-    const metadata: any = {
+    const metadata: { role: string[]; clientId?: string } = {
       role: Array.isArray(role) ? role : [role]
     }
     
@@ -44,11 +44,12 @@ export async function POST(req: NextRequest) {
       success: true, 
       message: 'Role assigned successfully'
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error assigning role:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json({ 
       error: 'Failed to assign role', 
-      details: error.message 
+      details: errorMessage 
     }, { status: 500 })
   }
 }

@@ -43,7 +43,7 @@ export default function UserManagement() {
       } else {
         setMessage(`Error: ${result.error}`)
       }
-    } catch (error) {
+    } catch {
       setMessage('Failed to create admin user')
     }
     
@@ -73,7 +73,7 @@ export default function UserManagement() {
       } else {
         setMessage(`Error: ${result.error}`)
       }
-    } catch (error) {
+    } catch {
       setMessage('Failed to assign role')
     }
     

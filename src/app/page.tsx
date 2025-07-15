@@ -4,6 +4,7 @@ import { useUser, SignInButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
+import Image from "next/image";
 
 export default function Home() {
   const { user, isLoaded } = useUser();
@@ -141,14 +142,14 @@ export default function Home() {
               <div className="relative">
                 {/* Holographic Depth Layers */}
                 {[...Array(3)].map((_, i) => (
-                  <img
+                  <Image
                     key={i}
                     src="https://i.postimg.cc/rws2hzg1/Asset-4.png"
                     alt="VitalStep AI Hologram"
+                    width={140}
+                    height={140}
                     className="absolute top-0 left-0 object-contain"
                     style={{
-                      width: '140px',
-                      height: '140px',
                       transform: `translateZ(${i * 2}px) scale(${1 + i * 0.02})`,
                       opacity: 0.3 - i * 0.1,
                       filter: `blur(${i}px) hue-rotate(${i * 30 + 5}deg) brightness(125%) contrast(85%) drop-shadow(0 ${4 + i * 2}px ${8 + i * 4}px rgba(139, 92, 246, ${0.3 - i * 0.1}))`,
@@ -158,13 +159,13 @@ export default function Home() {
                 ))}
                 
                 {/* Primary Holographic Logo */}
-                <img 
+                <Image 
                   src="https://i.postimg.cc/rws2hzg1/Asset-4.png" 
                   alt="VitalStep AI Logo" 
+                  width={140}
+                  height={140}
                   className="relative object-contain transition-all duration-1000 group-hover:scale-105"
                   style={{
-                    width: '140px',
-                    height: '140px',
                     filter: 'saturate(120%) brightness(115%) contrast(90%) hue-rotate(3deg) drop-shadow(0 8px 16px rgba(139, 92, 246, 0.4)) drop-shadow(0 4px 8px rgba(236, 72, 153, 0.3))',
                     animation: 'gentle-float 8s ease-in-out infinite'
                   }}

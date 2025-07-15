@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,33 +13,21 @@ import {
   BarChart3,
   Calendar,
   Download,
-  ExternalLink,
   Play,
   Pause,
   Settings,
-  Bell,
-  Star,
   ArrowUpRight,
-  ArrowDownRight,
   Eye,
-  MousePointer,
   DollarSign,
   Activity,
   Brain,
   Sparkles,
-  Cpu,
-  Layers,
-  Network,
-  Orbit,
-  Atom,
-  Hexagon,
   Shield,
-  Rocket,
   Crown,
   Diamond,
   MessageSquare
 } from 'lucide-react'
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 const revenueData = [
   { month: 'Jan', revenue: 45000, leads: 320, conversions: 48 },
@@ -131,8 +118,7 @@ const recentActivities = [
   }
 ]
 
-export default function ClientDashboard({ params }: { params: { id: string } }) {
-  const [selectedTimeframe, setSelectedTimeframe] = useState('6m')
+export default function ClientDashboard() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">

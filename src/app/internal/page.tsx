@@ -1,42 +1,29 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   Briefcase, 
-  Users, 
   Rocket, 
   FileText, 
   Zap, 
   Target, 
   Clock, 
   CheckCircle, 
-  AlertCircle, 
   TrendingUp,
-  Calendar,
   Plus,
-  Filter,
   MoreHorizontal,
   Play,
   Pause,
   Settings,
-  BarChart3,
   Workflow,
   Brain,
   Database,
   Sparkles,
-  Cpu,
-  Layers,
-  Network,
-  Orbit,
-  Atom,
-  Hexagon,
-  Shield,
-  Cog
+  Network
 } from 'lucide-react'
-import { Progress } from '@/components/ui/progress'
 
 const tasks = [
   {
@@ -129,14 +116,7 @@ const getStatusColor = (status: string) => {
   }
 }
 
-const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case 'high': return 'bg-red-500/10 text-red-400 border-red-500/20'
-    case 'medium': return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-    case 'low': return 'bg-green-500/10 text-green-400 border-green-500/20'
-    default: return 'bg-slate-500/10 text-slate-400 border-slate-500/20'
-  }
-}
+
 
 export default function InternalDashboard() {
   return (

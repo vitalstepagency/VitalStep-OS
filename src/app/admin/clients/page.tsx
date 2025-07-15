@@ -16,30 +16,17 @@ import {
   Edit, 
   Trash2, 
   DollarSign, 
-  Calendar, 
-  Activity, 
   AlertTriangle,
   CheckCircle,
   Clock,
   TrendingUp,
   Building,
   Mail,
-  Phone,
   Globe,
   Settings,
-  Brain,
   Sparkles,
-  Cpu,
-  Layers,
-  Network,
-  Orbit,
-  Atom,
-  Hexagon,
   Shield,
-  Rocket,
   Crown,
-  Diamond,
-  Zap,
   Target
 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -148,7 +135,7 @@ const getPlanColor = (plan: string) => {
 
 export default function ClientManagement() {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedTab, setSelectedTab] = useState('all')
+  
 
   const filteredClients = clients.filter(client => 
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
