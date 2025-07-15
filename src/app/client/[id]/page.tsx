@@ -677,7 +677,10 @@ export default function ClientDashboard({ params }: { params: { id: string } }) 
             </Button>
           </div>
         </TabsContent>
-      </Tabs>
+            </Tabs>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

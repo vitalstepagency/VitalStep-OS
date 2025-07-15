@@ -670,6 +670,7 @@ export default function AdminDashboard() {
             </Tabs>
           </div>
         </div>
+      </div>
     </div>
   )
 }

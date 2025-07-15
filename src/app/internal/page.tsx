@@ -681,6 +681,7 @@ export default function InternalDashboard() {
             </Tabs>
           </div>
         </div>
+      </div>
     </div>
   )
 }
