@@ -26,10 +26,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      afterSignIn="/"
+      afterSignUp="/"
+    >
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
+          suppressHydrationWarning={true}
         >
           {children}
         </body>

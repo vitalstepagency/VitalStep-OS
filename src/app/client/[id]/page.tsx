@@ -1,5 +1,8 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useUser } from '@clerk/nextjs'
+import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -119,6 +122,61 @@ const recentActivities = [
 ]
 
 export default function ClientDashboard() {
+  const { user, isLoaded } = useUser()
+  const params = useParams()
+  const router = useRouter()
+  const clientId = params.id as string
+  
+  useEffect(() => {
+    if (!isLoaded) return // Wait for user to load
+    
+    if (!user) {
+      console.log('❌ CLIENT DASHBOARD: No user found, redirecting to sign-in')
+      router.push('/sign-in')
+      return
+    }
+    
+    const role = user.publicMetadata?.role as string | string[]
+    const userClientId = user.publicMetadata?.clientId as string
+    
+    console.log('🔍 CLIENT DASHBOARD AUTH CHECK:', {
+      clientId,
+      userClientId,
+      role,
+      userMetadata: user.publicMetadata
+    })
+    
+    // Handle multiple roles
+    const roles = Array.isArray(role) ? role : (role ? [role] : [])
+    const hasRole = (checkRole: string) => roles.includes(checkRole)
+    const isAdmin = hasRole('admin')
+    const isClient = hasRole('client') || hasRole('client_team')
+    
+    // Check authorization
+    if (!isAdmin && !isClient) {
+      console.log('❌ CLIENT DASHBOARD: User is not admin or client, redirecting to home')
+      router.push('/')
+      return
+    }
+    
+    // Check client ID match (unless admin)
+    if (!isAdmin && userClientId !== clientId) {
+      console.log('❌ CLIENT DASHBOARD: Client ID mismatch, redirecting to home')
+      router.push('/')
+      return
+    }
+    
+    console.log('✅ CLIENT DASHBOARD: Authorization successful')
+  }, [user, isLoaded, clientId, router])
+  
+  // Show loading while checking authorization
+  if (!isLoaded || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    )
+  }
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">

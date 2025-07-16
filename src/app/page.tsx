@@ -15,54 +15,56 @@ export default function Home() {
       const role = user.publicMetadata?.role as string | string[];
       const clientId = user.publicMetadata?.clientId as string;
       
+      console.log('🔄 AUTO-REDIRECT: Checking user for automatic redirection');
       console.log('User metadata:', { role, clientId, publicMetadata: user.publicMetadata });
       
-      // If user has no role assigned, assign default client role
-       if (!role || (Array.isArray(role) && role.length === 0)) {
-         console.log('No role found, assigning default client role');
-         // Trigger self role assignment
-         fetch('/api/user/self-assign', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' }
-         }).then(response => response.json())
-         .then(data => {
-           if (data.success) {
-             console.log('Role assigned successfully:', data.metadata);
-             // Reload user data
-             window.location.reload();
-           } else {
-             console.error('Failed to assign role:', data.error);
-           }
-         }).catch(err => {
-           console.error('Failed to assign role:', err);
-         });
-         return;
-       }
-      
-      // Handle multiple roles - convert to array for consistent processing
+      // Handle multiple roles
       const roles = Array.isArray(role) ? role : (role ? [role] : []);
       const hasRole = (checkRole: string) => roles.includes(checkRole);
       const isAdmin = hasRole('admin');
       const isTeam = hasRole('team');
       const isClient = hasRole('client') || hasRole('client_team');
-
-      console.log('Role check:', { roles, isAdmin, isTeam, isClient, clientId });
-
-      // Priority: admin > team > client
+      
+      console.log('🔍 AUTO-REDIRECT ANALYSIS:', {
+        roles,
+        isAdmin,
+        isTeam,
+        isClient,
+        clientId
+      });
+      
+      // Auto-redirect based on role
       if (isAdmin) {
-        console.log('Redirecting to admin dashboard');
-        router.push('/admin');
+        console.log('🚀 AUTO-REDIRECTING ADMIN TO /admin');
+        window.location.href = '/admin';
       } else if (isTeam) {
-        console.log('Redirecting to internal dashboard');
-        router.push('/internal');
+        console.log('🚀 AUTO-REDIRECTING TEAM TO /internal');
+        window.location.href = '/internal';
       } else if (isClient && clientId) {
-        console.log('Redirecting to client dashboard:', `/client/${clientId}`);
-        router.push(`/client/${clientId}`);
-      } else {
-        console.log('No valid role or clientId found for redirect');
+        console.log('🚀 AUTO-REDIRECTING CLIENT TO /client/' + clientId);
+        window.location.href = `/client/${clientId}`;
+      } else if (!role || (Array.isArray(role) && role.length === 0)) {
+        console.log('❌ No role found, auto-assigning default client role');
+        // Auto-assign default client role
+        fetch('/api/user/self-assign', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log('✅ Role assigned successfully, redirecting to refresh page');
+            window.location.href = '/refresh?redirect_url=' + encodeURIComponent('/');
+          } else {
+            console.error('❌ Failed to assign role:', data.error);
+          }
+        })
+        .catch(error => {
+          console.error('❌ Error assigning role:', error);
+        });
       }
     }
-  }, [isLoaded, user, router]);
+  }, [isLoaded, user]);
 
 
 
@@ -547,12 +549,42 @@ export default function Home() {
                   color: '#e2e8f0',
                   textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
                 }}
-                onClick={() => {
+                onClick={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  
+                  console.log('=== DASHBOARD BUTTON CLICKED ===');
+                  console.log('User object:', user);
+                  console.log('User loaded:', isLoaded);
+                  
                   if (user) {
+                    console.log('=== DASHBOARD BUTTON CLICKED ===');
+                    console.log('User metadata:', user.publicMetadata);
+                    console.log('User object:', {
+                      id: user.id,
+                      firstName: user.firstName,
+                      lastName: user.lastName,
+                      emailAddresses: user.emailAddresses.map(e => e.emailAddress),
+                      publicMetadata: user.publicMetadata,
+                      externalId: user.externalId
+                    });
+                    console.log('User loaded:', true);
+                    
+                    // Debug session claims
+                    console.log('🔍 SESSION DEBUGGING:');
+                    console.log('- User ID:', user.id);
+                    console.log('- Session exists:', !!user.id);
+                    console.log('- Public metadata:', JSON.stringify(user.publicMetadata, null, 2));
+                    
                     const role = user.publicMetadata?.role as string | string[];
                     const clientId = user.publicMetadata?.clientId as string;
                     
-                    console.log('Button clicked - User metadata:', { role, clientId, publicMetadata: user.publicMetadata });
+                    console.log('=== USER METADATA DEBUG ===');
+                    console.log('Full publicMetadata:', JSON.stringify(user.publicMetadata, null, 2));
+                    console.log('Role:', role);
+                    console.log('ClientId:', clientId);
+                    console.log('Role type:', typeof role);
+                    console.log('Role is array:', Array.isArray(role));
                     
                     // Handle multiple roles - convert to array for consistent processing
                     const roles = Array.isArray(role) ? role : (role ? [role] : []);
@@ -560,45 +592,71 @@ export default function Home() {
                     const isAdmin = hasRole('admin');
                     const isTeam = hasRole('team');
                     const isClient = hasRole('client') || hasRole('client_team');
-                    
-                    console.log('Button click - Role check:', { roles, isAdmin, isTeam, isClient, clientId });
-                    
+
+                    console.log('=== ROLE ANALYSIS ===');
+                    console.log('Processed roles array:', roles);
+                    console.log('Is Admin:', isAdmin);
+                    console.log('Is Team:', isTeam);
+                    console.log('Is Client:', isClient);
+                    console.log('Has ClientId:', !!clientId);
+
                     // Priority: admin > team > client
                     if (isAdmin) {
-                      console.log('Button: Redirecting to admin dashboard');
+                      console.log('🔄 REDIRECTING TO ADMIN DASHBOARD');
                       router.push('/admin');
                     } else if (isTeam) {
-                      console.log('Button: Redirecting to internal dashboard');
+                      console.log('🔄 REDIRECTING TO INTERNAL DASHBOARD');
                       router.push('/internal');
                     } else if (isClient && clientId) {
-                      console.log('Button: Redirecting to client dashboard:', `/client/${clientId}`);
-                      router.push(`/client/${clientId}`);
+                      const targetUrl = `/client/${clientId}`;
+                      console.log('🔄 REDIRECTING TO CLIENT DASHBOARD:', targetUrl);
+                      console.log('✅ USING NEXT.JS ROUTER NAVIGATION');
+                      console.log('🔍 URL BREAKDOWN:');
+                      console.log('  - Base path: /client/');
+                      console.log('  - Client ID:', clientId);
+                      console.log('  - Full URL:', targetUrl);
+                      console.log('  - Current location:', window.location.href);
+                      
+                      // Use direct window navigation to bypass Clerk redirects
+                      console.log('🚀 NAVIGATING NOW WITH DIRECT WINDOW.LOCATION...');
+                      console.log('🔄 Direct navigation to:', targetUrl);
+                      window.location.href = targetUrl;
                     } else {
-                       console.log('Button: No valid role or clientId found for redirect');
+                       console.log('❌ NO VALID ROLE OR CLIENT ID FOUND');
+                       console.log('Attempting role assignment...');
+                       
                        // Try to assign default role if none exists
                        if (!role || (Array.isArray(role) && role.length === 0)) {
-                         console.log('Button: Assigning default client role');
-                         fetch('/api/user/self-assign', {
-                           method: 'POST',
-                           headers: { 'Content-Type': 'application/json' }
-                         }).then(response => response.json())
-                         .then(data => {
+                         console.log('📝 ASSIGNING DEFAULT CLIENT ROLE');
+                         try {
+                           const response = await fetch('/api/user/self-assign', {
+                             method: 'POST',
+                             headers: { 'Content-Type': 'application/json' }
+                           });
+                           const data = await response.json();
+                           
+                           console.log('API Response:', data);
+                           
                            if (data.success) {
-                             console.log('Button: Role assigned successfully:', data.metadata);
-                             window.location.reload();
+                             console.log('✅ ROLE ASSIGNED SUCCESSFULLY:', data.metadata);
+                             console.log('🔄 REDIRECTING TO REFRESH PAGE...');
+                             window.location.href = '/refresh?redirect_url=' + encodeURIComponent('/');
                            } else {
-                             console.error('Button: Failed to assign role:', data.error);
+                             console.error('❌ FAILED TO ASSIGN ROLE:', data.error);
+                             alert('Failed to assign role: ' + data.error);
                            }
-                         }).catch(err => {
-                           console.error('Button: Failed to assign role:', err);
-                         });
+                         } catch (err) {
+                           console.error('❌ API ERROR:', err);
+                           alert('Network error: ' + err);
+                         }
                        } else {
-                         // Force refresh user data
-                         window.location.reload();
+                         console.log('🔄 REDIRECTING TO REFRESH PAGE...');
+                         window.location.href = '/refresh?redirect_url=' + encodeURIComponent('/');
                        }
                      }
                   } else {
-                    console.log('Button: No user found');
+                    console.log('❌ NO USER FOUND');
+                    alert('No user found. Please sign in again.');
                   }
                 }}
               >
