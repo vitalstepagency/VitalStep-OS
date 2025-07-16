@@ -25,7 +25,7 @@ model CompanyProfile {
   
   // Onboarding Data
   objectives            String?
-  challenges            String?
+  challenges            Json?    // Array of challenge strings
   timeline              String?
   budget                String?
   referralSource        String?

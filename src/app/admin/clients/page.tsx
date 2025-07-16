@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   Search,
   Filter,
@@ -17,7 +19,15 @@ import {
   UserCheck,
   Clock,
   AlertTriangle,
-  Plus
+  Plus,
+  Building2,
+  Target,
+  Calendar,
+  DollarSign,
+  CheckCircle,
+  XCircle,
+  BarChart3,
+  TrendingUp
 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -99,6 +109,29 @@ interface Client {
   lastActive: string
   createdAt: number
   updatedAt: number
+  // Onboarding data
+  companyName?: string
+  industry?: string
+  challenges?: string[]
+  objectives?: string
+  timeline?: string
+  budget?: string
+  onboardingCompleted?: boolean
+  onboardingStep?: number
+  onboardingProgress?: OnboardingProgressItem[]
+  userDetails?: {
+    firstName?: string
+    lastName?: string
+    imageUrl?: string
+    lastSignInAt?: number
+  }
+}
+
+interface OnboardingProgressItem {
+  id: string
+  step: number
+  data: any
+  completedAt: string
 }
 
 type ClientStatus = 'all' | 'active' | 'trial' | 'needs_attention'
@@ -135,22 +168,54 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>(mockClients)
   const [loading, setLoading] = useState(false)
 
-  // Fetch real users from Clerk
+  // Fetch real onboarding data
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchOnboardingData = async () => {
       setLoading(true)
       try {
-        const response = await fetch('/api/admin/users')
+        const response = await fetch('/api/admin/onboarding-data')
         if (response.ok) {
           const data = await response.json()
-          setClients(data.users)
+          
+          // Transform the data to match our Client interface
+          const transformedClients = data.data.map((profile: any) => ({
+            id: profile.id,
+            name: profile.userDetails ? 
+              `${profile.userDetails.firstName || ''} ${profile.userDetails.lastName || ''}`.trim() || 'Unknown User' :
+              'Unknown User',
+            email: profile.userDetails?.emailAddresses?.[0]?.emailAddress || 'No email',
+            avatar: profile.userDetails?.imageUrl || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+            status: profile.onboardingCompleted ? 'active' : 'trial',
+            role: 'client',
+            clientId: profile.clientId,
+            revenue: profile.metrics?.revenue || 0,
+            campaigns: profile.metrics?.campaigns || 0,
+            joinDate: new Date(profile.createdAt).toLocaleDateString(),
+            lastActive: profile.userDetails?.lastSignInAt ? 
+              new Date(profile.userDetails.lastSignInAt).toLocaleDateString() : 'Never',
+            createdAt: new Date(profile.createdAt).getTime(),
+            updatedAt: new Date(profile.updatedAt).getTime(),
+            // Onboarding specific data
+            companyName: profile.companyName,
+            industry: profile.industry,
+            challenges: profile.challenges || [],
+            objectives: profile.objectives,
+            timeline: profile.timeline,
+            budget: profile.budget,
+            onboardingCompleted: profile.onboardingCompleted,
+            onboardingStep: profile.onboardingStep,
+            onboardingProgress: profile.onboardingProgress,
+            userDetails: profile.userDetails
+          }))
+          
+          setClients(transformedClients)
         } else {
-          console.error('Failed to fetch users:', response.statusText)
+          console.error('Failed to fetch onboarding data:', response.statusText)
           // Keep mock data as fallback
           setClients(mockClients)
         }
       } catch (error) {
-        console.error('Error fetching users:', error)
+        console.error('Error fetching onboarding data:', error)
         // Keep mock data as fallback
         setClients(mockClients)
       } finally {
@@ -158,12 +223,20 @@ export default function ClientsPage() {
       }
     }
 
-    fetchUsers()
+    fetchOnboardingData()
   }, [])
 
-  const filteredClients = clients.filter(client => {
+  // Update client status based on onboarding completion
+  const updatedClients = clients.map(client => ({
+    ...client,
+    status: client.onboardingCompleted ? 'active' : 
+           (client.onboardingStep && client.onboardingStep > 1) ? 'needs_attention' : 'trial'
+  }))
+
+  const filteredClients = updatedClients.filter(client => {
     const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         client.email.toLowerCase().includes(searchTerm.toLowerCase())
+                         client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (client.companyName && client.companyName.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesStatus = selectedStatus === 'all' || client.status === selectedStatus
     
     return matchesSearch && matchesStatus
@@ -171,9 +244,9 @@ export default function ClientsPage() {
 
   const statusCounts = {
     all: clients.length,
-    active: clients.filter(c => c.status === 'active').length,
-    trial: clients.filter(c => c.status === 'trial').length,
-    needs_attention: clients.filter(c => c.status === 'needs_attention').length
+    active: clients.filter(c => c.onboardingCompleted).length,
+    trial: clients.filter(c => !c.onboardingCompleted).length,
+    needs_attention: clients.filter(c => !c.onboardingCompleted && (c.onboardingStep || 1) > 1).length
   }
 
   if (loading) {
@@ -337,6 +410,63 @@ export default function ClientsPage() {
           </div>
         </div>
 
+        {/* Onboarding Statistics Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-green-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-400 text-sm font-medium">Completed Onboarding</p>
+                  <p className="text-3xl font-bold text-white">{statusCounts.active}</p>
+                  <p className="text-green-300 text-xs">
+                    {clients.length > 0 ? Math.round((statusCounts.active / clients.length) * 100) : 0}% completion rate
+                  </p>
+                </div>
+                <CheckCircle className="w-8 h-8 text-green-400" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-blue-900/20 to-cyan-900/20 border-blue-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-400 text-sm font-medium">In Progress</p>
+                  <p className="text-3xl font-bold text-white">{statusCounts.trial}</p>
+                  <p className="text-blue-300 text-xs">Active onboarding</p>
+                </div>
+                <Clock className="w-8 h-8 text-blue-400" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-amber-900/20 to-orange-900/20 border-amber-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-amber-400 text-sm font-medium">Needs Attention</p>
+                  <p className="text-3xl font-bold text-white">{statusCounts.needs_attention}</p>
+                  <p className="text-amber-300 text-xs">Stalled progress</p>
+                </div>
+                <AlertTriangle className="w-8 h-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-purple-900/20 to-violet-900/20 border-purple-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-400 text-sm font-medium">Total Clients</p>
+                  <p className="text-3xl font-bold text-white">{clients.length}</p>
+                  <p className="text-purple-300 text-xs">All registered</p>
+                </div>
+                <Users className="w-8 h-8 text-purple-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Client Status Filters and Search */}
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
@@ -344,8 +474,8 @@ export default function ClientsPage() {
             <div className="flex flex-wrap gap-2">
               {[
                 { key: 'all', label: 'All Clients', count: statusCounts.all },
-                { key: 'active', label: 'Active', count: statusCounts.active },
-                { key: 'trial', label: 'Trial', count: statusCounts.trial },
+                { key: 'active', label: 'Completed Onboarding', count: statusCounts.active },
+                { key: 'trial', label: 'In Progress', count: statusCounts.trial },
                 { key: 'needs_attention', label: 'Needs Attention', count: statusCounts.needs_attention }
               ].map((status) => (
                 <Button
@@ -444,10 +574,254 @@ export default function ClientsPage() {
                     </div>
                   </div>
 
-                  <Button className="w-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-400 border border-cyan-500/30 hover:border-cyan-500/50 transition-all duration-300">
-                    <Eye className="w-4 h-4 mr-2" />
-                    View Details
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="w-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-400 border border-cyan-500/30 hover:border-cyan-500/50 transition-all duration-300">
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Details
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold text-white flex items-center gap-3">
+                          <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-xl flex items-center justify-center">
+                            <Users className="w-6 h-6 text-white" />
+                          </div>
+                          {client.name} - Client Details
+                        </DialogTitle>
+                      </DialogHeader>
+                      
+                      <Tabs defaultValue="overview" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3 bg-slate-800">
+                          <TabsTrigger value="overview" className="text-slate-300 data-[state=active]:text-white">Overview</TabsTrigger>
+                          <TabsTrigger value="onboarding" className="text-slate-300 data-[state=active]:text-white">Onboarding</TabsTrigger>
+                          <TabsTrigger value="progress" className="text-slate-300 data-[state=active]:text-white">Progress</TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="overview" className="space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Card className="bg-slate-800/50 border-slate-700">
+                              <CardHeader>
+                                <CardTitle className="text-white flex items-center gap-2">
+                                  <Building2 className="w-5 h-5 text-cyan-400" />
+                                  Company Information
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-3">
+                                <div>
+                                  <p className="text-slate-400 text-sm">Company Name</p>
+                                  <p className="text-white font-semibold">{client.companyName || 'Not provided'}</p>
+                                </div>
+                                <div>
+                                  <p className="text-slate-400 text-sm">Industry</p>
+                                  <p className="text-white font-semibold">{client.industry || 'Not provided'}</p>
+                                </div>
+                                <div>
+                                  <p className="text-slate-400 text-sm">Email</p>
+                                  <p className="text-white font-semibold">{client.email}</p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                            
+                            <Card className="bg-slate-800/50 border-slate-700">
+                              <CardHeader>
+                                <CardTitle className="text-white flex items-center gap-2">
+                                  <BarChart3 className="w-5 h-5 text-purple-400" />
+                                  Performance Metrics
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-3">
+                                <div>
+                                  <p className="text-slate-400 text-sm">Revenue</p>
+                                  <p className="text-white font-semibold">${client.revenue.toLocaleString()}</p>
+                                </div>
+                                <div>
+                                  <p className="text-slate-400 text-sm">Campaigns</p>
+                                  <p className="text-white font-semibold">{client.campaigns}</p>
+                                </div>
+                                <div>
+                                  <p className="text-slate-400 text-sm">Status</p>
+                                  <Badge className={getStatusColor(client.status)}>
+                                    {client.status.replace('_', ' ').charAt(0).toUpperCase() + client.status.replace('_', ' ').slice(1)}
+                                  </Badge>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="onboarding" className="space-y-6">
+                          <div className="grid grid-cols-1 gap-6">
+                            <Card className="bg-slate-800/50 border-slate-700">
+                              <CardHeader>
+                                <CardTitle className="text-white flex items-center gap-2">
+                                  <Target className="w-5 h-5 text-green-400" />
+                                  Onboarding Responses
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <p className="text-slate-400 text-sm mb-2">Objectives</p>
+                                    <p className="text-white bg-slate-700/50 p-3 rounded-lg">
+                                      {client.objectives || 'Not provided'}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-slate-400 text-sm mb-2">Timeline</p>
+                                    <p className="text-white bg-slate-700/50 p-3 rounded-lg">
+                                      {client.timeline || 'Not provided'}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-slate-400 text-sm mb-2">Budget</p>
+                                    <p className="text-white bg-slate-700/50 p-3 rounded-lg">
+                                      {client.budget || 'Not provided'}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-slate-400 text-sm mb-2">Completion Status</p>
+                                    <div className="flex items-center gap-2">
+                                      {client.onboardingCompleted ? (
+                                        <><CheckCircle className="w-5 h-5 text-green-400" />
+                                        <span className="text-green-400 font-semibold">Completed</span></>
+                                      ) : (
+                                        <><XCircle className="w-5 h-5 text-amber-400" />
+                                        <span className="text-amber-400 font-semibold">In Progress (Step {client.onboardingStep || 1})</span></>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {client.challenges && Array.isArray(client.challenges) && client.challenges.length > 0 && (
+                                  <div>
+                                    <p className="text-slate-400 text-sm mb-2">Challenges</p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {client.challenges.map((challenge, index) => (
+                                        <Badge key={index} className="bg-red-500/20 text-red-400 border-red-500/30">
+                                          {challenge}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="progress" className="space-y-6">
+                          <Card className="bg-slate-800/50 border-slate-700">
+                            <CardHeader>
+                              <CardTitle className="text-white flex items-center gap-2">
+                                <TrendingUp className="w-5 h-5 text-blue-400" />
+                                Onboarding Progress Timeline
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              {client.onboardingProgress && client.onboardingProgress.length > 0 ? (
+                                <div className="space-y-6">
+                                  {/* Progress Overview */}
+                                  <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-4 rounded-lg border border-blue-500/20">
+                                    <div className="flex items-center justify-between mb-3">
+                                      <h3 className="text-white font-semibold">Progress Overview</h3>
+                                      <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+                                        {client.onboardingProgress.length} Steps Completed
+                                      </Badge>
+                                    </div>
+                                    <div className="w-full bg-slate-700 rounded-full h-2">
+                                      <div 
+                                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                                        style={{ width: `${Math.min((client.onboardingProgress.length / 5) * 100, 100)}%` }}
+                                      />
+                                    </div>
+                                    <p className="text-slate-300 text-sm mt-2">
+                                      {client.onboardingCompleted ? 'Onboarding completed successfully!' : `Step ${client.onboardingStep || client.onboardingProgress.length} of 5`}
+                                    </p>
+                                  </div>
+
+                                  {/* Step Details */}
+                                  <div className="space-y-4">
+                                    {client.onboardingProgress.map((progress, index) => {
+                                      const getStepTitle = (step) => {
+                                        switch(step) {
+                                          case 1: return 'Welcome & Introduction'
+                                          case 2: return 'Company Information'
+                                          case 3: return 'Business Objectives'
+                                          case 4: return 'Project Requirements'
+                                          case 5: return 'Final Review'
+                                          default: return `Step ${step}`
+                                        }
+                                      }
+
+                                      const getStepDescription = (step, data) => {
+                                        try {
+                                          const parsedData = typeof data === 'string' ? JSON.parse(data) : data
+                                          switch(step) {
+                                            case 1: return 'Initial setup and welcome process completed'
+                                            case 2: return `Company details provided: ${parsedData?.companyName || 'Information collected'}`
+                                            case 3: return `Business objectives defined: ${parsedData?.objectives || 'Goals established'}`
+                                            case 4: return `Project requirements specified: ${parsedData?.timeline || 'Requirements documented'}`
+                                            case 5: return 'Final review and confirmation completed'
+                                            default: return 'Step completed successfully'
+                                          }
+                                        } catch {
+                                          return 'Step completed successfully'
+                                        }
+                                      }
+
+                                      return (
+                                        <div key={progress.id} className="flex items-start gap-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                                          <div className="relative">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                              <CheckCircle className="w-5 h-5" />
+                                            </div>
+                                            {index < client.onboardingProgress.length - 1 && (
+                                              <div className="absolute top-10 left-1/2 transform -translate-x-1/2 w-0.5 h-6 bg-gradient-to-b from-green-500 to-slate-600" />
+                                            )}
+                                          </div>
+                                          <div className="flex-1">
+                                            <div className="flex items-center justify-between mb-2">
+                                              <h4 className="text-white font-semibold text-lg">{getStepTitle(progress.step)}</h4>
+                                              <div className="flex items-center gap-2">
+                                                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                                                  Completed
+                                                </Badge>
+                                                <span className="text-slate-400 text-sm">
+                                                  {new Date(progress.completedAt).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                  })}
+                                                </span>
+                                              </div>
+                                            </div>
+                                            <p className="text-slate-300 text-sm leading-relaxed">
+                                              {getStepDescription(progress.step, progress.data)}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-center py-12">
+                                  <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Clock className="w-8 h-8 text-slate-500" />
+                                  </div>
+                                  <h3 className="text-slate-400 font-semibold mb-2">No Progress Data</h3>
+                                  <p className="text-slate-500 text-sm">This client hasn't started the onboarding process yet.</p>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </TabsContent>
+                      </Tabs>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardContent>
             </Card>
