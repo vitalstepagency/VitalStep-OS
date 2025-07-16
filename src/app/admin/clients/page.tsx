@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { 
   Search,
   Filter,
@@ -27,7 +28,10 @@ import {
   CheckCircle,
   XCircle,
   BarChart3,
-  TrendingUp
+  TrendingUp,
+  Trash2,
+  Settings,
+  UserCog
 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -167,6 +171,39 @@ export default function ClientsPage() {
   const [selectedStatus, setSelectedStatus] = useState<ClientStatus>('all')
   const [clients, setClients] = useState<Client[]>(mockClients)
   const [loading, setLoading] = useState(false)
+  const [deletingClient, setDeletingClient] = useState<string | null>(null)
+
+  // Handle client deletion
+  const handleDeleteClient = async (clientId: string) => {
+    if (!confirm('Are you sure you want to delete this client? This action cannot be undone.')) {
+      return
+    }
+
+    setDeletingClient(clientId)
+    try {
+      const response = await fetch(`/api/admin/delete-client/${clientId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        // Remove client from local state
+        setClients(prev => prev.filter(client => client.id !== clientId))
+      } else {
+        alert('Failed to delete client. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error deleting client:', error)
+      alert('Failed to delete client. Please try again.')
+    } finally {
+      setDeletingClient(null)
+    }
+  }
+
+  // Handle manage client (admin impersonation)
+  const handleManageClient = (client: Client) => {
+    // Navigate to client dashboard with admin context
+    window.open(`/client/${client.id}?admin=true`, '_blank')
+  }
 
   // Fetch real onboarding data
   useEffect(() => {
@@ -544,9 +581,29 @@ export default function ClientsPage() {
                       </p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-slate-800 border-slate-700">
+                      <DropdownMenuItem 
+                        onClick={() => handleManageClient(client)}
+                        className="text-slate-300 hover:text-white hover:bg-slate-700 cursor-pointer"
+                      >
+                        <UserCog className="w-4 h-4 mr-2" />
+                        Manage Client
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleDeleteClient(client.id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete User
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
 
                 <div className="space-y-3">
@@ -577,8 +634,8 @@ export default function ClientsPage() {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button className="w-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-400 border border-cyan-500/30 hover:border-cyan-500/50 transition-all duration-300">
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Details
+                        <Settings className="w-4 h-4 mr-2" />
+                        Manage Client
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700">
