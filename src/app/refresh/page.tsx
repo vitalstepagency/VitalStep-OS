@@ -2,9 +2,9 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
-export default function RefreshPage() {
+function RefreshContent() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -58,5 +58,31 @@ export default function RefreshPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-black"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+      <div className="relative z-10 text-center">
+        <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-8"></div>
+        <div className="text-white text-2xl font-light tracking-widest animate-pulse">
+          LOADING
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function RefreshPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <RefreshContent />
+    </Suspense>
   );
 }

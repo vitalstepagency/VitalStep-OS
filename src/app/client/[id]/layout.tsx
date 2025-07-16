@@ -26,7 +26,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       return
     }
 
-    const publicMetadata = user?.publicMetadata as any
+    const publicMetadata = user?.publicMetadata as { role?: string | string[]; clientId?: string } | undefined
     const role = publicMetadata?.role
     const userClientId = publicMetadata?.clientId
     

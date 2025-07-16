@@ -27,8 +27,8 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider
-      afterSignIn="/"
-      afterSignUp="/"
+      afterSignInUrl="/"
+      afterSignUpUrl="/"
     >
       <html lang="en">
         <body
