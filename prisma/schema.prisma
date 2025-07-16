@@ -76,5 +76,6 @@ model ClientMetrics {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   
+  @@unique([userId, companyProfileId])
   @@map("client_metrics")
 }
