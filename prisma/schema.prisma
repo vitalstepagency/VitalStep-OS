@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model CompanyProfile {
+  id                    String   @id @default(cuid())
+  userId                String   @unique // Clerk user ID
+  clientId              String   @unique // Generated client ID
+  
+  // Company Information
+  companyName           String?
+  industry              String?
+  position              String?
+  companySize           String?
+  annualRevenue         String?
+  
+  // Onboarding Data
+  objectives            String?
+  challenges            String?
+  timeline              String?
+  budget                String?
+  referralSource        String?
+  
+  // Personalization
+  brandColors           Json?    // {primary, secondary, accent}
+  logo                  String?
+  customWelcomeMessage  String?
+  
+  // Progress Tracking
+  onboardingCompleted   Boolean  @default(false)
+  onboardingStep        Int      @default(1)
+  
+  // Timestamps
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@map("company_profiles")
+}
+
+model OnboardingProgress {
+  id                String   @id @default(cuid())
+  userId            String
+  step              Int
+  data              Json     // Store step-specific data
+  completedAt       DateTime @default(now())
+  
+  @@map("onboarding_progress")
+}
+
+model ClientMetrics {
+  id                String   @id @default(cuid())
+  userId            String
+  companyProfileId  String
+  
+  // Performance Metrics
+  revenue           Float?   @default(0)
+  campaigns         Int?     @default(0)
+  conversionRate    Float?   @default(0)
+  satisfaction      Float?   @default(0)
+  
+  // Engagement Metrics
+  loginCount        Int      @default(0)
+  lastLoginAt       DateTime?
+  sessionDuration   Int?     // in minutes
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@map("client_metrics")
+}

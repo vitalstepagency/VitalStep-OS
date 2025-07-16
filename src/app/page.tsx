@@ -41,8 +41,24 @@ export default function Home() {
         console.log('🚀 AUTO-REDIRECTING TEAM TO /internal');
         router.push('/internal');
       } else if (isClient && clientId) {
-        console.log('🚀 AUTO-REDIRECTING CLIENT TO /client/' + clientId);
-        router.push(`/client/${clientId}`);
+        // Check onboarding status before redirecting to personalized dashboard
+        console.log('🔍 CLIENT DETECTED: Checking onboarding status before redirect');
+        fetch('/api/client/onboarding')
+          .then(response => response.json())
+          .then(data => {
+            if (data.profile && data.profile.onboardingCompleted) {
+              console.log('✅ ONBOARDING COMPLETED: Redirecting to personalized dashboard');
+              router.push(`/client/${clientId}`);
+            } else {
+              console.log('⏳ ONBOARDING PENDING: Redirecting to onboarding flow');
+              router.push('/client');
+            }
+          })
+          .catch(error => {
+            console.error('❌ Error checking onboarding status:', error);
+            // Fallback to onboarding flow if there's an error
+            router.push('/client');
+          });
       } else if (!role || (Array.isArray(role) && role.length === 0)) {
         console.log('❌ No role found, auto-assigning default client role');
         // Auto-assign default client role
@@ -557,6 +573,16 @@ export default function Home() {
                   console.log('User object:', user);
                   console.log('User loaded:', isLoaded);
                   
+                  // Check for force onboarding parameter FIRST
+                  const urlParams = new URLSearchParams(window.location.search);
+                  const forceOnboarding = urlParams.get('onboarding') === 'true';
+                  
+                  if (forceOnboarding) {
+                    console.log('🔄 FORCE ONBOARDING DETECTED - REDIRECTING TO ONBOARDING FLOW');
+                    window.location.href = '/client';
+                    return;
+                  }
+                  
                   if (user) {
                     console.log('=== DASHBOARD BUTTON CLICKED ===');
                     console.log('User metadata:', user.publicMetadata);
@@ -608,19 +634,36 @@ export default function Home() {
                       console.log('🔄 REDIRECTING TO INTERNAL DASHBOARD');
                       router.push('/internal');
                     } else if (isClient && clientId) {
-                      const targetUrl = `/client/${clientId}`;
-                      console.log('🔄 REDIRECTING TO CLIENT DASHBOARD:', targetUrl);
-                      console.log('✅ USING NEXT.JS ROUTER NAVIGATION');
-                      console.log('🔍 URL BREAKDOWN:');
-                      console.log('  - Base path: /client/');
-                      console.log('  - Client ID:', clientId);
-                      console.log('  - Full URL:', targetUrl);
-                      console.log('  - Current location:', window.location.href);
+                      console.log('🔄 CHECKING CLIENT ONBOARDING STATUS...');
                       
-                      // Use direct window navigation to bypass Clerk redirects
-                      console.log('🚀 NAVIGATING NOW WITH DIRECT WINDOW.LOCATION...');
-                      console.log('🔄 Direct navigation to:', targetUrl);
-                      window.location.href = targetUrl;
+                      try {
+                        // Check if user has completed onboarding
+                        const response = await fetch('/api/client/profile');
+                        
+                        if (response.ok) {
+                          const data = await response.json();
+                          
+                          if (data.profile && data.profile.onboardingCompleted) {
+                            // User has completed onboarding, go to personalized dashboard
+                            const targetUrl = `/client/${clientId}`;
+                            console.log('✅ ONBOARDING COMPLETED - REDIRECTING TO DASHBOARD:', targetUrl);
+                            window.location.href = targetUrl;
+                          } else {
+                            // User needs to complete onboarding
+                            console.log('📝 ONBOARDING REQUIRED - REDIRECTING TO ONBOARDING FLOW');
+                            window.location.href = '/client';
+                          }
+                        } else {
+                          // No profile found, start onboarding
+                          console.log('🆕 NEW CLIENT - STARTING ONBOARDING PROCESS');
+                          window.location.href = '/client';
+                        }
+                      } catch (error) {
+                        console.error('❌ ERROR CHECKING ONBOARDING STATUS:', error);
+                        // Fallback to onboarding flow
+                        console.log('🔄 FALLBACK - REDIRECTING TO ONBOARDING');
+                        window.location.href = '/client';
+                      }
                     } else {
                        console.log('❌ NO VALID ROLE OR CLIENT ID FOUND');
                        console.log('Attempting role assignment...');

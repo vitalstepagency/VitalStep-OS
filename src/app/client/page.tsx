@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -82,8 +82,10 @@ const exclusiveFeatures = [
 ]
 
 export default function ClientDashboard() {
-  const { isLoaded } = useUser()
+  const { isLoaded, user } = useUser()
   const [currentStep, setCurrentStep] = useState(1)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState({
     companyName: '',
     industry: '',
@@ -97,13 +99,90 @@ export default function ClientDashboard() {
     referralSource: ''
   })
 
+  // Load existing profile data
+  useEffect(() => {
+    if (isLoaded && user) {
+      loadProfile()
+    }
+  }, [isLoaded, user])
+
+  const loadProfile = async () => {
+    try {
+      const response = await fetch('/api/client/onboarding')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.profile) {
+          setFormData({
+            companyName: data.profile.companyName || '',
+            industry: data.profile.industry || '',
+            position: data.profile.position || '',
+            companySize: data.profile.companySize || '',
+            annualRevenue: data.profile.annualRevenue || '',
+            objectives: data.profile.objectives || '',
+            challenges: data.profile.challenges || '',
+            timeline: data.profile.timeline || '',
+            budget: data.profile.budget || '',
+            referralSource: data.profile.referralSource || ''
+          })
+          setCurrentStep(data.profile.onboardingStep || 1)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const saveProgress = async () => {
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/client/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ step: currentStep, formData })
+      })
+      
+      if (response.ok) {
+        // Profile updated successfully
+      }
+    } catch (error) {
+      console.error('Failed to save progress:', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const completeOnboarding = async () => {
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/client/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ finalData: formData })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        // Redirect to personalized dashboard
+        window.location.href = `/client/${data.profile.clientId}`
+      }
+    } catch (error) {
+      console.error('Failed to complete onboarding:', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (currentStep < onboardingSteps.length) {
-      setCurrentStep(currentStep + 1)
+      const newStep = currentStep + 1
+      setCurrentStep(newStep)
+      await saveProgress()
     }
   }
 
@@ -113,7 +192,7 @@ export default function ClientDashboard() {
     }
   }
 
-  if (!isLoaded) {
+  if (!isLoaded || isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0">
@@ -645,16 +724,19 @@ export default function ClientDashboard() {
                 {currentStep < onboardingSteps.length ? (
                   <Button
                     onClick={nextStep}
-                    className="bg-gradient-to-r from-pink-600 via-purple-600 to-cyan-600 hover:from-pink-700 hover:via-purple-700 hover:to-cyan-700 text-white font-semibold px-8 py-3 rounded-xl shadow-2xl hover:shadow-pink-500/25 transition-all duration-300 transform hover:scale-105"
+                    disabled={isSaving}
+                    className="bg-gradient-to-r from-pink-600 via-purple-600 to-cyan-600 hover:from-pink-700 hover:via-purple-700 hover:to-cyan-700 text-white font-semibold px-8 py-3 rounded-xl shadow-2xl hover:shadow-pink-500/25 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Continue Ascension
+                    {isSaving ? 'Saving...' : 'Continue Ascension'}
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 ) : (
                   <Button
-                    className="bg-gradient-to-r from-emerald-600 via-green-600 to-cyan-600 hover:from-emerald-700 hover:via-green-700 hover:to-cyan-700 text-white font-semibold px-8 py-3 rounded-xl shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
+                    onClick={completeOnboarding}
+                    disabled={isSaving}
+                    className="bg-gradient-to-r from-emerald-600 via-green-600 to-cyan-600 hover:from-emerald-700 hover:via-green-700 hover:to-cyan-700 text-white font-semibold px-8 py-3 rounded-xl shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Complete Integration
+                    {isSaving ? 'Completing...' : 'Complete Integration'}
                     <Rocket className="w-5 h-5 ml-2" />
                   </Button>
                 )}
