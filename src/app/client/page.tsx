@@ -11,7 +11,6 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
   ArrowRight, 
-  Building2, 
   Sparkles, 
   Upload, 
   Crown,
@@ -63,7 +62,7 @@ const challenges = [
 
 export default function ClientOnboarding() {
   const { isSignedIn, isLoaded, user } = useUser()
-  const router = useRouter()
+  const router = useRouter(); void router;
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     businessName: '',
@@ -85,7 +84,7 @@ export default function ClientOnboarding() {
   const currentStepData = steps.find(step => step.id === currentStep)
   const progress = (currentStep / steps.length) * 100
 
-  const trackStepProgress = async (step: number, stepData: any) => {
+  const trackStepProgress = async (step: number, stepData: Record<string, unknown>) => {
     try {
       await fetch('/api/onboarding/progress', {
         method: 'POST',
@@ -174,12 +173,14 @@ export default function ClientOnboarding() {
       }
     } catch (error) {
       console.error('Fetch error occurred:', error)
-      console.error('Error type:', error.constructor.name)
-      console.error('Error message:', error.message)
-      if (error.stack) {
-        console.error('Error stack:', error.stack)
+      if (error instanceof Error) {
+        console.error('Error type:', error.constructor.name)
+        console.error('Error message:', error.message)
+        if (error.stack) {
+          console.error('Error stack:', error.stack)
+        }
       }
-      alert(`Network error occurred: ${error.message}. Please check your connection and try again.`)
+      alert(`Network error occurred: ${error instanceof Error ? error.message : 'Unknown error'}. Please check your connection and try again.`)
     } finally {
       console.log('Onboarding completion process finished')
     }
@@ -191,7 +192,7 @@ export default function ClientOnboarding() {
     }
   }
 
-  const updateFormData = (field: string, value: any) => {
+  const updateFormData = (field: string, value: unknown) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 

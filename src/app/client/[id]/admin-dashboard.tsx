@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   Building2, 
-  BarChart3, 
   Target, 
   Users, 
   Settings, 
@@ -32,7 +31,12 @@ interface ClientData {
   budget?: string
   onboardingCompleted?: boolean
   onboardingStep?: number
-  onboardingProgress?: any[]
+  onboardingProgress?: Array<{
+    id: string;
+    step: number;
+    completedAt: string;
+    data: string;
+  }>
   userDetails?: {
     firstName?: string
     lastName?: string
@@ -60,7 +64,7 @@ export default function ClientDashboard() {
         } else {
           setError('Failed to load client data')
         }
-      } catch (err) {
+      } catch {
         setError('Error loading client data')
       } finally {
         setLoading(false)

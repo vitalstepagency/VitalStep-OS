@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { 
   Search,
   Filter,
@@ -23,15 +23,12 @@ import {
   Plus,
   Building2,
   Target,
-  Calendar,
-  DollarSign,
   CheckCircle,
   XCircle,
   BarChart3,
   TrendingUp,
   Trash2,
-  Settings,
-  UserCog
+  Settings
 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -42,7 +39,7 @@ const mockClients: Client[] = [
     name: 'Sarah Chen',
     email: 'sarah.chen@techcorp.com',
     avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-    status: 'active',
+    status: 'active' as ClientStatus,
     role: 'client',
     clientId: '1',
     joinDate: '2024-01-15',
@@ -57,7 +54,7 @@ const mockClients: Client[] = [
     name: 'Marcus Rodriguez',
     email: 'marcus.r@innovate.io',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-    status: 'trial',
+    status: 'trial' as ClientStatus,
     role: 'client',
     clientId: '2',
     joinDate: '2024-02-20',
@@ -72,7 +69,7 @@ const mockClients: Client[] = [
     name: 'Emily Watson',
     email: 'emily.watson@startup.com',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-    status: 'needs_attention',
+    status: 'needs_attention' as ClientStatus,
     role: 'client',
     clientId: '3',
     joinDate: '2024-01-08',
@@ -87,7 +84,7 @@ const mockClients: Client[] = [
     name: 'David Kim',
     email: 'david.kim@enterprise.com',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-    status: 'active',
+    status: 'active' as ClientStatus,
     role: 'client',
     clientId: '4',
     joinDate: '2023-11-12',
@@ -134,7 +131,7 @@ interface Client {
 interface OnboardingProgressItem {
   id: string
   step: number
-  data: any
+  data: Record<string, unknown>
   completedAt: string
 }
 
@@ -171,7 +168,7 @@ export default function ClientsPage() {
   const [selectedStatus, setSelectedStatus] = useState<ClientStatus>('all')
   const [clients, setClients] = useState<Client[]>(mockClients)
   const [loading, setLoading] = useState(false)
-  const [deletingClient, setDeletingClient] = useState<string | null>(null)
+  const [, setDeletingClient] = useState<string | null>(null)
 
   // Handle client deletion
   const handleDeleteClient = async (clientId: string) => {
@@ -215,14 +212,39 @@ export default function ClientsPage() {
           const data = await response.json()
           
           // Transform the data to match our Client interface
-          const transformedClients = data.data.map((profile: any) => ({
+          const transformedClients = data.data.map((profile: {
+            id: string;
+            userDetails?: {
+              firstName?: string;
+              lastName?: string;
+              emailAddresses?: { emailAddress: string }[];
+              imageUrl?: string;
+              lastSignInAt?: string;
+            };
+            clientId: string;
+            metrics?: {
+              revenue?: number;
+              campaigns?: number;
+            };
+            createdAt: string;
+            updatedAt: string;
+            companyName?: string;
+            industry?: string;
+            challenges?: string[];
+            objectives?: string;
+            timeline?: string;
+            budget?: string;
+            onboardingCompleted: boolean;
+            onboardingStep?: number;
+            onboardingProgress: OnboardingProgressItem[];
+          }) => ({
             id: profile.id,
             name: profile.userDetails ? 
               `${profile.userDetails.firstName || ''} ${profile.userDetails.lastName || ''}`.trim() || 'Unknown User' :
               'Unknown User',
             email: profile.userDetails?.emailAddresses?.[0]?.emailAddress || 'No email',
             avatar: profile.userDetails?.imageUrl || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-            status: profile.onboardingCompleted ? 'active' : 'trial',
+            status: (profile.onboardingCompleted ? 'active' : 'trial') as ClientStatus,
             role: 'client',
             clientId: profile.clientId,
             revenue: profile.metrics?.revenue || 0,
@@ -588,13 +610,257 @@ export default function ClientsPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="bg-slate-800 border-slate-700">
-                      <DropdownMenuItem 
-                        onClick={() => handleManageClient(client)}
-                        className="text-slate-300 hover:text-white hover:bg-slate-700 cursor-pointer"
-                      >
-                        <UserCog className="w-4 h-4 mr-2" />
-                        Manage Client
-                      </DropdownMenuItem>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <DropdownMenuItem 
+                            className="text-slate-300 hover:text-white hover:bg-slate-700 cursor-pointer"
+                            onSelect={(e) => e.preventDefault()}
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View Onboarding
+                          </DropdownMenuItem>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700">
+                          <DialogHeader>
+                            <DialogTitle className="text-2xl font-bold text-white flex items-center gap-3">
+                              <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-xl flex items-center justify-center">
+                                <Users className="w-6 h-6 text-white" />
+                              </div>
+                              {client.name} - Client Details
+                            </DialogTitle>
+                          </DialogHeader>
+                          
+                          <Tabs defaultValue="overview" className="w-full">
+                            <TabsList className="grid w-full grid-cols-3 bg-slate-800">
+                              <TabsTrigger value="overview" className="text-slate-300 data-[state=active]:text-white">Overview</TabsTrigger>
+                              <TabsTrigger value="onboarding" className="text-slate-300 data-[state=active]:text-white">Onboarding</TabsTrigger>
+                              <TabsTrigger value="progress" className="text-slate-300 data-[state=active]:text-white">Progress</TabsTrigger>
+                            </TabsList>
+                            
+                            <TabsContent value="overview" className="space-y-6">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <Card className="bg-slate-800/50 border-slate-700">
+                                  <CardHeader>
+                                    <CardTitle className="text-white flex items-center gap-2">
+                                      <Building2 className="w-5 h-5 text-cyan-400" />
+                                      Company Information
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="space-y-3">
+                                    <div>
+                                      <p className="text-slate-400 text-sm">Company Name</p>
+                                      <p className="text-white font-semibold">{client.companyName || 'Not provided'}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-slate-400 text-sm">Industry</p>
+                                      <p className="text-white font-semibold">{client.industry || 'Not provided'}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-slate-400 text-sm">Email</p>
+                                      <p className="text-white font-semibold">{client.email}</p>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                                
+                                <Card className="bg-slate-800/50 border-slate-700">
+                                  <CardHeader>
+                                    <CardTitle className="text-white flex items-center gap-2">
+                                      <BarChart3 className="w-5 h-5 text-purple-400" />
+                                      Performance Metrics
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="space-y-3">
+                                    <div>
+                                      <p className="text-slate-400 text-sm">Revenue</p>
+                                      <p className="text-white font-semibold">${client.revenue.toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-slate-400 text-sm">Campaigns</p>
+                                      <p className="text-white font-semibold">{client.campaigns}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-slate-400 text-sm">Status</p>
+                                      <Badge className={getStatusColor(client.status)}>
+                                        {client.status.replace('_', ' ').charAt(0).toUpperCase() + client.status.replace('_', ' ').slice(1)}
+                                      </Badge>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </TabsContent>
+                            
+                            <TabsContent value="onboarding" className="space-y-6">
+                              <div className="grid grid-cols-1 gap-6">
+                                <Card className="bg-slate-800/50 border-slate-700">
+                                  <CardHeader>
+                                    <CardTitle className="text-white flex items-center gap-2">
+                                      <Target className="w-5 h-5 text-green-400" />
+                                      Onboarding Responses
+                                    </CardTitle>
+                                  </CardHeader>
+                                  <CardContent className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <p className="text-slate-400 text-sm mb-2">Objectives</p>
+                                        <p className="text-white bg-slate-700/50 p-3 rounded-lg">
+                                          {client.objectives || 'Not provided'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p className="text-slate-400 text-sm mb-2">Timeline</p>
+                                        <p className="text-white bg-slate-700/50 p-3 rounded-lg">
+                                          {client.timeline || 'Not provided'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p className="text-slate-400 text-sm mb-2">Budget</p>
+                                        <p className="text-white bg-slate-700/50 p-3 rounded-lg">
+                                          {client.budget || 'Not provided'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p className="text-slate-400 text-sm mb-2">Completion Status</p>
+                                        <div className="flex items-center gap-2">
+                                          {client.onboardingCompleted ? (
+                                            <><CheckCircle className="w-5 h-5 text-green-400" />
+                                            <span className="text-green-400 font-semibold">Completed</span></>
+                                          ) : (
+                                            <><XCircle className="w-5 h-5 text-amber-400" />
+                                            <span className="text-amber-400 font-semibold">In Progress (Step {client.onboardingStep || 1})</span></>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    {client.challenges && Array.isArray(client.challenges) && client.challenges.length > 0 && (
+                                      <div>
+                                        <p className="text-slate-400 text-sm mb-2">Challenges</p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {client.challenges.map((challenge, index) => (
+                                            <Badge key={index} className="bg-red-500/20 text-red-400 border-red-500/30">
+                                              {challenge}
+                                            </Badge>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </TabsContent>
+                            
+                            <TabsContent value="progress" className="space-y-6">
+                              <Card className="bg-slate-800/50 border-slate-700">
+                                <CardHeader>
+                                  <CardTitle className="text-white flex items-center gap-2">
+                                    <TrendingUp className="w-5 h-5 text-blue-400" />
+                                    Onboarding Progress Timeline
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  {client.onboardingProgress && client.onboardingProgress.length > 0 ? (
+                                    <div className="space-y-6">
+                                      {/* Progress Overview */}
+                                      <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-4 rounded-lg border border-blue-500/20">
+                                        <div className="flex items-center justify-between mb-3">
+                                          <h3 className="text-white font-semibold">Progress Overview</h3>
+                                          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+                                            {client.onboardingProgress.length} Steps Completed
+                                          </Badge>
+                                        </div>
+                                        <div className="w-full bg-slate-700 rounded-full h-2">
+                                          <div 
+                                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                                            style={{ width: `${Math.min((client.onboardingProgress.length / 5) * 100, 100)}%` }}
+                                          />
+                                        </div>
+                                        <p className="text-slate-300 text-sm mt-2">
+                                          {client.onboardingCompleted ? 'Onboarding completed successfully!' : `Step ${client.onboardingStep || client.onboardingProgress.length} of 5`}
+                                        </p>
+                                      </div>
+
+                                      {/* Step Details */}
+                                      <div className="space-y-4">
+                                        {client.onboardingProgress.map((progress, index) => {
+                                          const getStepTitle = (step: number) => {
+                                            switch(step) {
+                                              case 1: return 'Welcome & Introduction'
+                                              case 2: return 'Company Information'
+                                              case 3: return 'Business Objectives'
+                                              case 4: return 'Project Requirements'
+                                              case 5: return 'Final Review'
+                                              default: return `Step ${step}`
+                                            }
+                                          }
+
+                                          const getStepDescription = (step: number, data: Record<string, unknown>) => {
+                                            try {
+                                              const parsedData = typeof data === 'string' ? JSON.parse(data) : data
+                                              switch(step) {
+                                                case 1: return 'Initial setup and welcome process completed'
+                                                case 2: return `Company details provided: ${parsedData?.companyName || 'Information collected'}`
+                                                case 3: return `Business objectives defined: ${parsedData?.objectives || 'Goals established'}`
+                                                case 4: return `Project requirements specified: ${parsedData?.timeline || 'Requirements documented'}`
+                                                case 5: return 'Final review and confirmation completed'
+                                                default: return 'Step completed successfully'
+                                              }
+                                            } catch {
+                                              return 'Step completed successfully'
+                                            }
+                                          }
+
+                                          return (
+                                            <div key={progress.id} className="flex items-start gap-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                                              <div className="relative">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                                  <CheckCircle className="w-5 h-5" />
+                                                </div>
+                                                {index < (client.onboardingProgress?.length || 0) - 1 && (
+                                                  <div className="absolute top-10 left-1/2 transform -translate-x-1/2 w-0.5 h-6 bg-gradient-to-b from-green-500 to-slate-600" />
+                                                )}
+                                              </div>
+                                              <div className="flex-1">
+                                                <div className="flex items-center justify-between mb-2">
+                                                  <h4 className="text-white font-semibold text-lg">{getStepTitle(progress.step)}</h4>
+                                                  <div className="flex items-center gap-2">
+                                                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                                                      Completed
+                                                    </Badge>
+                                                    <span className="text-slate-400 text-sm">
+                                                      {new Date(progress.completedAt).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                      })}
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                                <p className="text-slate-300 text-sm leading-relaxed">
+                                                  {getStepDescription(progress.step, progress.data)}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          )
+                                        })}
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="text-center py-12">
+                                      <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Clock className="w-8 h-8 text-slate-500" />
+                                      </div>
+                                      <h3 className="text-slate-400 font-semibold mb-2">No Progress Data</h3>
+                                      <p className="text-slate-500 text-sm">This client hasn&apos;t started the onboarding process yet.</p>
+                                    </div>
+                                  )}
+                                </CardContent>
+                              </Card>
+                            </TabsContent>
+                          </Tabs>
+                        </DialogContent>
+                      </Dialog>
                       <DropdownMenuItem 
                         onClick={() => handleDeleteClient(client.id)}
                         className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
@@ -631,268 +897,27 @@ export default function ClientsPage() {
                     </div>
                   </div>
 
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="w-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-400 border border-cyan-500/30 hover:border-cyan-500/50 transition-all duration-300">
-                        <Settings className="w-4 h-4 mr-2" />
-                        Manage Client
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700">
-                      <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-white flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-xl flex items-center justify-center">
-                            <Users className="w-6 h-6 text-white" />
-                          </div>
-                          {client.name} - Client Details
-                        </DialogTitle>
-                      </DialogHeader>
-                      
-                      <Tabs defaultValue="overview" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 bg-slate-800">
-                          <TabsTrigger value="overview" className="text-slate-300 data-[state=active]:text-white">Overview</TabsTrigger>
-                          <TabsTrigger value="onboarding" className="text-slate-300 data-[state=active]:text-white">Onboarding</TabsTrigger>
-                          <TabsTrigger value="progress" className="text-slate-300 data-[state=active]:text-white">Progress</TabsTrigger>
-                        </TabsList>
-                        
-                        <TabsContent value="overview" className="space-y-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Card className="bg-slate-800/50 border-slate-700">
-                              <CardHeader>
-                                <CardTitle className="text-white flex items-center gap-2">
-                                  <Building2 className="w-5 h-5 text-cyan-400" />
-                                  Company Information
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent className="space-y-3">
-                                <div>
-                                  <p className="text-slate-400 text-sm">Company Name</p>
-                                  <p className="text-white font-semibold">{client.companyName || 'Not provided'}</p>
-                                </div>
-                                <div>
-                                  <p className="text-slate-400 text-sm">Industry</p>
-                                  <p className="text-white font-semibold">{client.industry || 'Not provided'}</p>
-                                </div>
-                                <div>
-                                  <p className="text-slate-400 text-sm">Email</p>
-                                  <p className="text-white font-semibold">{client.email}</p>
-                                </div>
-                              </CardContent>
-                            </Card>
-                            
-                            <Card className="bg-slate-800/50 border-slate-700">
-                              <CardHeader>
-                                <CardTitle className="text-white flex items-center gap-2">
-                                  <BarChart3 className="w-5 h-5 text-purple-400" />
-                                  Performance Metrics
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent className="space-y-3">
-                                <div>
-                                  <p className="text-slate-400 text-sm">Revenue</p>
-                                  <p className="text-white font-semibold">${client.revenue.toLocaleString()}</p>
-                                </div>
-                                <div>
-                                  <p className="text-slate-400 text-sm">Campaigns</p>
-                                  <p className="text-white font-semibold">{client.campaigns}</p>
-                                </div>
-                                <div>
-                                  <p className="text-slate-400 text-sm">Status</p>
-                                  <Badge className={getStatusColor(client.status)}>
-                                    {client.status.replace('_', ' ').charAt(0).toUpperCase() + client.status.replace('_', ' ').slice(1)}
-                                  </Badge>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="onboarding" className="space-y-6">
-                          <div className="grid grid-cols-1 gap-6">
-                            <Card className="bg-slate-800/50 border-slate-700">
-                              <CardHeader>
-                                <CardTitle className="text-white flex items-center gap-2">
-                                  <Target className="w-5 h-5 text-green-400" />
-                                  Onboarding Responses
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div>
-                                    <p className="text-slate-400 text-sm mb-2">Objectives</p>
-                                    <p className="text-white bg-slate-700/50 p-3 rounded-lg">
-                                      {client.objectives || 'Not provided'}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-slate-400 text-sm mb-2">Timeline</p>
-                                    <p className="text-white bg-slate-700/50 p-3 rounded-lg">
-                                      {client.timeline || 'Not provided'}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-slate-400 text-sm mb-2">Budget</p>
-                                    <p className="text-white bg-slate-700/50 p-3 rounded-lg">
-                                      {client.budget || 'Not provided'}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-slate-400 text-sm mb-2">Completion Status</p>
-                                    <div className="flex items-center gap-2">
-                                      {client.onboardingCompleted ? (
-                                        <><CheckCircle className="w-5 h-5 text-green-400" />
-                                        <span className="text-green-400 font-semibold">Completed</span></>
-                                      ) : (
-                                        <><XCircle className="w-5 h-5 text-amber-400" />
-                                        <span className="text-amber-400 font-semibold">In Progress (Step {client.onboardingStep || 1})</span></>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                {client.challenges && Array.isArray(client.challenges) && client.challenges.length > 0 && (
-                                  <div>
-                                    <p className="text-slate-400 text-sm mb-2">Challenges</p>
-                                    <div className="flex flex-wrap gap-2">
-                                      {client.challenges.map((challenge, index) => (
-                                        <Badge key={index} className="bg-red-500/20 text-red-400 border-red-500/30">
-                                          {challenge}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </CardContent>
-                            </Card>
-                          </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="progress" className="space-y-6">
-                          <Card className="bg-slate-800/50 border-slate-700">
-                            <CardHeader>
-                              <CardTitle className="text-white flex items-center gap-2">
-                                <TrendingUp className="w-5 h-5 text-blue-400" />
-                                Onboarding Progress Timeline
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              {client.onboardingProgress && client.onboardingProgress.length > 0 ? (
-                                <div className="space-y-6">
-                                  {/* Progress Overview */}
-                                  <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-4 rounded-lg border border-blue-500/20">
-                                    <div className="flex items-center justify-between mb-3">
-                                      <h3 className="text-white font-semibold">Progress Overview</h3>
-                                      <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                                        {client.onboardingProgress.length} Steps Completed
-                                      </Badge>
-                                    </div>
-                                    <div className="w-full bg-slate-700 rounded-full h-2">
-                                      <div 
-                                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                                        style={{ width: `${Math.min((client.onboardingProgress.length / 5) * 100, 100)}%` }}
-                                      />
-                                    </div>
-                                    <p className="text-slate-300 text-sm mt-2">
-                                      {client.onboardingCompleted ? 'Onboarding completed successfully!' : `Step ${client.onboardingStep || client.onboardingProgress.length} of 5`}
-                                    </p>
-                                  </div>
-
-                                  {/* Step Details */}
-                                  <div className="space-y-4">
-                                    {client.onboardingProgress.map((progress, index) => {
-                                      const getStepTitle = (step) => {
-                                        switch(step) {
-                                          case 1: return 'Welcome & Introduction'
-                                          case 2: return 'Company Information'
-                                          case 3: return 'Business Objectives'
-                                          case 4: return 'Project Requirements'
-                                          case 5: return 'Final Review'
-                                          default: return `Step ${step}`
-                                        }
-                                      }
-
-                                      const getStepDescription = (step, data) => {
-                                        try {
-                                          const parsedData = typeof data === 'string' ? JSON.parse(data) : data
-                                          switch(step) {
-                                            case 1: return 'Initial setup and welcome process completed'
-                                            case 2: return `Company details provided: ${parsedData?.companyName || 'Information collected'}`
-                                            case 3: return `Business objectives defined: ${parsedData?.objectives || 'Goals established'}`
-                                            case 4: return `Project requirements specified: ${parsedData?.timeline || 'Requirements documented'}`
-                                            case 5: return 'Final review and confirmation completed'
-                                            default: return 'Step completed successfully'
-                                          }
-                                        } catch {
-                                          return 'Step completed successfully'
-                                        }
-                                      }
-
-                                      return (
-                                        <div key={progress.id} className="flex items-start gap-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600/30">
-                                          <div className="relative">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                                              <CheckCircle className="w-5 h-5" />
-                                            </div>
-                                            {index < client.onboardingProgress.length - 1 && (
-                                              <div className="absolute top-10 left-1/2 transform -translate-x-1/2 w-0.5 h-6 bg-gradient-to-b from-green-500 to-slate-600" />
-                                            )}
-                                          </div>
-                                          <div className="flex-1">
-                                            <div className="flex items-center justify-between mb-2">
-                                              <h4 className="text-white font-semibold text-lg">{getStepTitle(progress.step)}</h4>
-                                              <div className="flex items-center gap-2">
-                                                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                                                  Completed
-                                                </Badge>
-                                                <span className="text-slate-400 text-sm">
-                                                  {new Date(progress.completedAt).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                  })}
-                                                </span>
-                                              </div>
-                                            </div>
-                                            <p className="text-slate-300 text-sm leading-relaxed">
-                                              {getStepDescription(progress.step, progress.data)}
-                                            </p>
-                                          </div>
-                                        </div>
-                                      )
-                                    })}
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="text-center py-12">
-                                  <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Clock className="w-8 h-8 text-slate-500" />
-                                  </div>
-                                  <h3 className="text-slate-400 font-semibold mb-2">No Progress Data</h3>
-                                  <p className="text-slate-500 text-sm">This client hasn't started the onboarding process yet.</p>
-                                </div>
-                              )}
-                            </CardContent>
-                          </Card>
-                        </TabsContent>
-                      </Tabs>
-                    </DialogContent>
-                  </Dialog>
+                  <Button 
+                    onClick={() => handleManageClient(client as Client)}
+                    className="w-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-400 border border-cyan-500/30 hover:border-cyan-500/50 transition-all duration-300"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Manage Client
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        
-        {filteredClients.length === 0 && (
-          <div className="text-center py-12">
-            <Users className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-slate-400 mb-2">No clients found</h3>
-            <p className="text-slate-500">Try adjusting your search criteria or check back later.</p>
-          </div>
-        )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
+        
+      {filteredClients.length === 0 && (
+        <div className="text-center py-12">
+          <Users className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-slate-400 mb-2">No clients found</h3>
+          <p className="text-slate-500">Try adjusting your search criteria or check back later.</p>
+        </div>
+      )}
     </div>
-  )
+  </div>
+)
 }

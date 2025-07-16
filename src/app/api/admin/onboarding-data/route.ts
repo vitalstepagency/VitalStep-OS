@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { auth, createClerkClient } from '@clerk/nextjs/server'
 import { PrismaClient } from '@prisma/client'
 
 const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
 const prisma = new PrismaClient()
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const { userId } = await auth()
     

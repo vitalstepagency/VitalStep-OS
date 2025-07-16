@@ -7,33 +7,29 @@ const prisma = new PrismaClient()
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check if user is authenticated
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get user details to check if they're an admin
-    const user = await clerkClient.users.getUser(userId)
+    const clerk = await clerkClient()
+    const user = await clerk.users.getUser(userId)
     const isAdmin = user.publicMetadata?.role === 'admin'
     
     if (!isAdmin) {
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 })
     }
 
-    const { id: clientId } = params
+    const { id: clientId } = await params
 
     // Fetch company profile
     const companyProfile = await prisma.companyProfile.findUnique({
-      where: { id: clientId },
-      include: {
-        onboardingProgress: {
-          orderBy: { step: 'asc' }
-        }
-      }
+      where: { id: clientId }
     })
 
     if (!companyProfile) {
@@ -43,7 +39,8 @@ export async function GET(
     // Fetch user details from Clerk
     let userDetails = null
     try {
-      const clerkUser = await clerkClient.users.getUser(companyProfile.userId)
+      const clerk = await clerkClient()
+      const clerkUser = await clerk.users.getUser(companyProfile.userId)
       userDetails = {
         firstName: clerkUser.firstName,
         lastName: clerkUser.lastName,
@@ -69,7 +66,6 @@ export async function GET(
       budget: companyProfile.budget,
       onboardingCompleted: companyProfile.onboardingCompleted,
       onboardingStep: companyProfile.onboardingStep,
-      onboardingProgress: companyProfile.onboardingProgress,
       userDetails
     }
 
