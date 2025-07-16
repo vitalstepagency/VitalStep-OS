@@ -36,13 +36,13 @@ export default function Home() {
       // Auto-redirect based on role
       if (isAdmin) {
         console.log('🚀 AUTO-REDIRECTING ADMIN TO /admin');
-        window.location.href = '/admin';
+        router.push('/admin');
       } else if (isTeam) {
         console.log('🚀 AUTO-REDIRECTING TEAM TO /internal');
-        window.location.href = '/internal';
+        router.push('/internal');
       } else if (isClient && clientId) {
         console.log('🚀 AUTO-REDIRECTING CLIENT TO /client/' + clientId);
-        window.location.href = `/client/${clientId}`;
+        router.push(`/client/${clientId}`);
       } else if (!role || (Array.isArray(role) && role.length === 0)) {
         console.log('❌ No role found, auto-assigning default client role');
         // Auto-assign default client role

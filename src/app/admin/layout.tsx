@@ -1,6 +1,8 @@
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import { ReactNode } from 'react'
+"use client";
+
+import { useAuth, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { ReactNode, useEffect, useState } from 'react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminHeader } from '@/components/admin/AdminHeader'
 
@@ -8,22 +10,61 @@ interface AdminLayoutProps {
   children: ReactNode
 }
 
-export default async function AdminLayout({ children }: AdminLayoutProps) {
-  const { userId, sessionClaims } = await auth()
-  
-  if (!userId) {
-    redirect('/sign-in')
-  }
+interface PublicMetadata {
+  role?: string | string[];
+  clientId?: string;
+}
 
-  const role = (sessionClaims?.publicMetadata as { role?: string | string[] })?.role
-  
-  // Handle multiple roles - convert to array for consistent processing
-  const roles = Array.isArray(role) ? role : (role ? [role] : [])
-  const hasRole = (checkRole: string) => roles.includes(checkRole)
-  const isAdmin = hasRole('admin')
-  
-  if (!isAdmin) {
-    redirect('/')
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
+  const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (isLoaded) {
+      if (!isSignedIn) {
+        router.push('/sign-in');
+        return;
+      }
+
+      if (user) {
+        const publicMetadata = user.publicMetadata as PublicMetadata;
+        const role = publicMetadata?.role;
+        
+        // Handle multiple roles - convert to array for consistent processing
+        const roles = Array.isArray(role) ? role : (role ? [role] : []);
+        const hasRole = (checkRole: string) => roles.includes(checkRole);
+        const isAdmin = hasRole('admin');
+        
+        if (!isAdmin) {
+          router.push('/');
+          return;
+        }
+        
+        setIsAuthorized(true);
+      }
+      setIsLoading(false);
+    }
+  }, [isLoaded, isSignedIn, user, router]);
+
+  if (isLoading || !isAuthorized) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-black"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="relative z-10 text-center">
+          <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-8"></div>
+          <div className="text-white text-2xl font-light tracking-widest animate-pulse">
+            AUTHORIZING ADMIN ACCESS
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
