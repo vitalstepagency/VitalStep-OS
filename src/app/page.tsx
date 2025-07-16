@@ -15,6 +15,30 @@ export default function Home() {
       const role = user.publicMetadata?.role as string | string[];
       const clientId = user.publicMetadata?.clientId as string;
       
+      console.log('User metadata:', { role, clientId, publicMetadata: user.publicMetadata });
+      
+      // If user has no role assigned, assign default client role
+       if (!role || (Array.isArray(role) && role.length === 0)) {
+         console.log('No role found, assigning default client role');
+         // Trigger self role assignment
+         fetch('/api/user/self-assign', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' }
+         }).then(response => response.json())
+         .then(data => {
+           if (data.success) {
+             console.log('Role assigned successfully:', data.metadata);
+             // Reload user data
+             window.location.reload();
+           } else {
+             console.error('Failed to assign role:', data.error);
+           }
+         }).catch(err => {
+           console.error('Failed to assign role:', err);
+         });
+         return;
+       }
+      
       // Handle multiple roles - convert to array for consistent processing
       const roles = Array.isArray(role) ? role : (role ? [role] : []);
       const hasRole = (checkRole: string) => roles.includes(checkRole);
@@ -22,13 +46,20 @@ export default function Home() {
       const isTeam = hasRole('team');
       const isClient = hasRole('client') || hasRole('client_team');
 
+      console.log('Role check:', { roles, isAdmin, isTeam, isClient, clientId });
+
       // Priority: admin > team > client
       if (isAdmin) {
+        console.log('Redirecting to admin dashboard');
         router.push('/admin');
       } else if (isTeam) {
+        console.log('Redirecting to internal dashboard');
         router.push('/internal');
       } else if (isClient && clientId) {
+        console.log('Redirecting to client dashboard:', `/client/${clientId}`);
         router.push(`/client/${clientId}`);
+      } else {
+        console.log('No valid role or clientId found for redirect');
       }
     }
   }, [isLoaded, user, router]);
@@ -521,6 +552,8 @@ export default function Home() {
                     const role = user.publicMetadata?.role as string | string[];
                     const clientId = user.publicMetadata?.clientId as string;
                     
+                    console.log('Button clicked - User metadata:', { role, clientId, publicMetadata: user.publicMetadata });
+                    
                     // Handle multiple roles - convert to array for consistent processing
                     const roles = Array.isArray(role) ? role : (role ? [role] : []);
                     const hasRole = (checkRole: string) => roles.includes(checkRole);
@@ -528,14 +561,44 @@ export default function Home() {
                     const isTeam = hasRole('team');
                     const isClient = hasRole('client') || hasRole('client_team');
                     
+                    console.log('Button click - Role check:', { roles, isAdmin, isTeam, isClient, clientId });
+                    
                     // Priority: admin > team > client
                     if (isAdmin) {
+                      console.log('Button: Redirecting to admin dashboard');
                       router.push('/admin');
                     } else if (isTeam) {
+                      console.log('Button: Redirecting to internal dashboard');
                       router.push('/internal');
                     } else if (isClient && clientId) {
+                      console.log('Button: Redirecting to client dashboard:', `/client/${clientId}`);
                       router.push(`/client/${clientId}`);
-                    }
+                    } else {
+                       console.log('Button: No valid role or clientId found for redirect');
+                       // Try to assign default role if none exists
+                       if (!role || (Array.isArray(role) && role.length === 0)) {
+                         console.log('Button: Assigning default client role');
+                         fetch('/api/user/self-assign', {
+                           method: 'POST',
+                           headers: { 'Content-Type': 'application/json' }
+                         }).then(response => response.json())
+                         .then(data => {
+                           if (data.success) {
+                             console.log('Button: Role assigned successfully:', data.metadata);
+                             window.location.reload();
+                           } else {
+                             console.error('Button: Failed to assign role:', data.error);
+                           }
+                         }).catch(err => {
+                           console.error('Button: Failed to assign role:', err);
+                         });
+                       } else {
+                         // Force refresh user data
+                         window.location.reload();
+                       }
+                     }
+                  } else {
+                    console.log('Button: No user found');
                   }
                 }}
               >
