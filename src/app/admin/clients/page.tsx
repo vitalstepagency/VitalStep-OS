@@ -905,19 +905,19 @@ export default function ClientsPage() {
                     Manage Client
                   </Button>
                 </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-        
-      {filteredClients.length === 0 && (
-        <div className="text-center py-12">
-          <Users className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-slate-400 mb-2">No clients found</h3>
-          <p className="text-slate-500">Try adjusting your search criteria or check back later.</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      )}
+        
+        {filteredClients.length === 0 && (
+          <div className="text-center py-12">
+            <Users className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-400 mb-2">No clients found</h3>
+            <p className="text-slate-500">Try adjusting your search criteria or check back later.</p>
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
 }

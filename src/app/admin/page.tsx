@@ -24,7 +24,7 @@ const dashboardMetrics = {
 }
 
 export default function AdminDashboard() {
-  const { isLoaded } = useUser()
+  const { user, isLoaded } = useUser()
 
   if (!isLoaded) {
     return (
@@ -38,6 +38,51 @@ export default function AdminDashboard() {
           <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-8"></div>
           <div className="text-white text-2xl font-light tracking-widest animate-pulse">
             INITIALIZING NEXUS
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Check if user is authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-black"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="relative z-10 text-center">
+          <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-8"></div>
+          <div className="text-white text-2xl font-light tracking-widest animate-pulse">
+            AUTHORIZING ADMIN ACCESS
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Check if user has admin role
+  const role = user.publicMetadata?.role as string | string[]
+  const roles = Array.isArray(role) ? role : (role ? [role] : [])
+  const isAdmin = roles.includes('admin')
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-purple-900/20 to-black"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        <div className="relative z-10 text-center">
+          <div className="text-red-400 text-6xl mb-8">⚠️</div>
+          <div className="text-white text-2xl font-light tracking-widest mb-4">
+            ACCESS DENIED
+          </div>
+          <div className="text-slate-400 text-lg">
+            Admin privileges required
           </div>
         </div>
       </div>
