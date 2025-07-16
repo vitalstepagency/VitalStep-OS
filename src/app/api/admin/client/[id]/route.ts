@@ -16,20 +16,28 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user details to check if they're an admin
+    // Get user details to check role and permissions
     const clerk = await clerkClient()
     const user = await clerk.users.getUser(userId)
-    const isAdmin = user.publicMetadata?.role === 'admin'
+    const role = user.publicMetadata?.role as string | string[]
+    const userClientId = user.publicMetadata?.clientId as string
     
-    if (!isAdmin) {
-      return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 })
+    // Handle multiple roles
+    const roles = Array.isArray(role) ? role : (role ? [role] : [])
+    const hasRole = (checkRole: string) => roles.includes(checkRole)
+    const isAdmin = hasRole('admin')
+    const isClient = hasRole('client') || hasRole('client_team')
+    
+    const { id: clientId } = await params
+    
+    // Check authorization: admin can access any client, clients can only access their own data
+    if (!isAdmin && (!isClient || userClientId !== clientId)) {
+      return NextResponse.json({ error: 'Forbidden - Access denied' }, { status: 403 })
     }
 
-    const { id: clientId } = await params
-
-    // Fetch company profile
+    // Fetch company profile by clientId
     const companyProfile = await prisma.companyProfile.findUnique({
-      where: { id: clientId }
+      where: { clientId: clientId }
     })
 
     if (!companyProfile) {
@@ -39,7 +47,6 @@ export async function GET(
     // Fetch user details from Clerk
     let userDetails = null
     try {
-      const clerk = await clerkClient()
       const clerkUser = await clerk.users.getUser(companyProfile.userId)
       userDetails = {
         firstName: clerkUser.firstName,

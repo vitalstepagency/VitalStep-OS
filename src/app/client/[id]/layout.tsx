@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth, useUser } from "@clerk/nextjs";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { ClientSidebar } from "@/components/client/ClientSidebar";
 import { ClientHeader } from "@/components/client/ClientHeader";
@@ -15,8 +15,12 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const { user, isLoaded: userLoaded } = useUser();
   const router = useRouter();
   const params = useParams();
+  const pathname = usePathname();
   const id = params.id as string;
   const [isAssigningRole, setIsAssigningRole] = useState(false);
+  
+  // Check if we're on the main dashboard route (Divine Transition Chamber)
+  const isMainDashboard = pathname === `/client/${id}`;
 
   useEffect(() => {
     if (!authLoaded || !userLoaded) return;
@@ -111,6 +115,12 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
   console.log("✅ CLIENT LAYOUT: Access granted");
 
+  // For the main dashboard (Divine Transition Chamber), render fullscreen without sidebar/header
+  if (isMainDashboard) {
+    return <>{children}</>;
+  }
+
+  // For other routes, use the traditional dashboard layout
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Revolutionary Background System */}
