@@ -921,5 +921,3 @@ export default function ClientsPage() {
     </div>
   )
 }
-
-export default ClientsPage
