@@ -136,9 +136,9 @@ export default function ClientOnboarding() {
       }
       
       console.log('Sending data:', requestData)
-      console.log('Making fetch request to /api/onboarding/complete...')
+      console.log('Making fetch request to /api/client/complete...')
       
-      const response = await fetch('/api/onboarding/complete', {
+      const response = await fetch('/api/client/complete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
