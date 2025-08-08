@@ -128,42 +128,96 @@ export default function Home() {
           <rect width="100%" height="100%" fill="url(#neuralGrid)" />
         </svg>
         
-        {/* Quantum Particles */}
+        {/* Quantum Particles - Enhanced */}
         <div className="absolute inset-0">
-          {[...Array(12)].map((_, i) => (
+          {[...Array(18)].map((_, i) => (
             <div
               key={i}
               className="absolute rounded-full"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                width: `${2 + Math.random() * 4}px`,
-                height: `${2 + Math.random() * 4}px`,
-                background: `radial-gradient(circle, rgba(139, 92, 246, ${0.8 + Math.random() * 0.2}), rgba(236, 72, 153, ${0.4 + Math.random() * 0.3}), transparent)`,
-                animation: `gentle-float ${8 + Math.random() * 4}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 3}s`,
-                filter: 'blur(0.5px)',
-                boxShadow: `0 0 ${4 + Math.random() * 8}px rgba(139, 92, 246, 0.6)`
+                width: `${1 + Math.random() * 3}px`,
+                height: `${1 + Math.random() * 3}px`,
+                background: `radial-gradient(circle, rgba(139, 92, 246, ${0.6 + Math.random() * 0.3}), rgba(236, 72, 153, ${0.3 + Math.random() * 0.2}), transparent)`,
+                animation: `gentle-float ${12 + Math.random() * 8}s ease-in-out infinite`,
+                animationDelay: `${Math.random() * 5}s`,
+                filter: 'blur(0.3px)',
+                boxShadow: `0 0 ${2 + Math.random() * 6}px rgba(139, 92, 246, 0.4)`
               }}
             />
           ))}
         </div>
         
-        {/* Holographic Depth Layers */}
-        <div className="absolute inset-0">
-          {[...Array(4)].map((_, i) => (
+        {/* Ethereal Constellation */}
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="absolute inset-0 opacity-5"
+              className="absolute"
               style={{
-                background: `conic-gradient(from ${i * 90}deg, transparent, rgba(139, 92, 246, 0.1), transparent, rgba(236, 72, 153, 0.1), transparent)`,
-                animation: `aurora-shift ${20 + i * 5}s linear infinite`,
-                animationDelay: `${i * 2}s`,
-                transform: `scale(${1 + i * 0.1}) rotate(${i * 15}deg)`
+                left: `${15 + Math.random() * 70}%`,
+                top: `${15 + Math.random() * 70}%`,
+                width: '1px',
+                height: '1px',
+                background: '#ffffff',
+                animation: `quantum-twinkle ${3 + Math.random() * 4}s ease-in-out infinite`,
+                animationDelay: `${Math.random() * 2}s`,
+                filter: 'blur(0.2px)',
+                boxShadow: `0 0 ${8 + Math.random() * 12}px rgba(255, 255, 255, 0.8)`
               }}
             />
           ))}
         </div>
+        
+        {/* Holographic Depth Layers - Enhanced */}
+        <div className="absolute inset-0">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute inset-0"
+              style={{
+                opacity: 0.02 + i * 0.005,
+                background: `conic-gradient(from ${i * 72}deg, transparent, rgba(139, 92, 246, ${0.08 + i * 0.02}), transparent, rgba(236, 72, 153, ${0.06 + i * 0.015}), transparent, rgba(59, 130, 246, ${0.04 + i * 0.01}), transparent)`,
+                animation: `aurora-shift ${25 + i * 8}s linear infinite`,
+                animationDelay: `${i * 3}s`,
+                transform: `scale(${1 + i * 0.08}) rotate(${i * 12}deg)`,
+                filter: `blur(${i * 0.5}px) brightness(${110 + i * 5}%)`
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* Neural Pathways */}
+        <svg className="absolute inset-0 w-full h-full opacity-8">
+          <defs>
+            <linearGradient id="neuralPath" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(139, 92, 246, 0.1)" stopOpacity="0">
+                <animate attributeName="stop-opacity" values="0;0.3;0" dur="8s" repeatCount="indefinite" />
+              </stop>
+              <stop offset="50%" stopColor="rgba(236, 72, 153, 0.15)" stopOpacity="0.2">
+                <animate attributeName="stop-opacity" values="0.1;0.4;0.1" dur="6s" repeatCount="indefinite" />
+              </stop>
+              <stop offset="100%" stopColor="rgba(59, 130, 246, 0.1)" stopOpacity="0">
+                <animate attributeName="stop-opacity" values="0;0.3;0" dur="10s" repeatCount="indefinite" />
+              </stop>
+            </linearGradient>
+          </defs>
+          {[...Array(3)].map((_, i) => (
+            <path
+              key={i}
+              d={`M${20 + i * 30},${80 + i * 20} Q${50 + i * 25},${30 + i * 15} ${80 + i * 20},${70 + i * 25}`}
+              stroke="url(#neuralPath)"
+              strokeWidth="0.5"
+              fill="none"
+              opacity="0.4"
+              style={{
+                animation: `gentle-float ${12 + i * 2}s ease-in-out infinite`,
+                animationDelay: `${i * 1.5}s`
+              }}
+            />
+          ))}
+        </svg>
         
         {/* Liquid Crystal Overlay */}
         <div 
@@ -200,8 +254,8 @@ export default function Home() {
                     className="absolute top-0 left-0 object-contain"
                     style={{
                       transform: `translateZ(${i * 2}px) scale(${1 + i * 0.02})`,
-                      opacity: 0.3 - i * 0.1,
-                      filter: `blur(${i}px) hue-rotate(${i * 30 + 5}deg) brightness(125%) contrast(85%) drop-shadow(0 ${4 + i * 2}px ${8 + i * 4}px rgba(139, 92, 246, ${0.3 - i * 0.1}))`,
+                      opacity: 0.08 - i * 0.02,
+                      filter: `blur(${i + 1}px) hue-rotate(${i * 30 + 5}deg) brightness(125%) contrast(85%) drop-shadow(0 ${4 + i * 2}px ${8 + i * 4}px rgba(139, 92, 246, ${0.15 - i * 0.05}))`,
                       animation: `gentle-float ${8 + i}s ease-in-out infinite`
                     }}
                   />
@@ -290,16 +344,18 @@ export default function Home() {
                       style={{
                         background: `linear-gradient(135deg, 
                           #ffffff 0%,
-                          #f8fafc 20%,
-                          #e2e8f0 40%,
-                          #cbd5e1 60%,
-                          #94a3b8 80%,
-                          #64748b 100%)`,
+                          #f1f5f9 15%,
+                          #e2e8f0 30%,
+                          #cbd5e1 45%,
+                          #94a3b8 60%,
+                          #64748b 75%,
+                          #475569 90%,
+                          #334155 100%)`,
                         backgroundClip: 'text',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
-                        filter: 'drop-shadow(0 2px 6px rgba(255, 255, 255, 0.05))',
-                        animation: 'ethereal-drift 18s ease-in-out infinite'
+                        filter: 'drop-shadow(0 3px 8px rgba(255, 255, 255, 0.08)) drop-shadow(0 0 20px rgba(139, 92, 246, 0.05))',
+                        animation: 'ethereal-breathe 12s ease-in-out infinite'
                       }}
                     >
                       VITALSTEP
@@ -323,15 +379,16 @@ export default function Home() {
                       style={{
                         background: `linear-gradient(135deg, 
                           #a855f7 0%,
-                          #c084fc 25%,
-                          #e879f9 50%,
-                          #f0abfc 75%,
-                          #fae8ff 100%)`,
+                          #c084fc 20%,
+                          #e879f9 40%,
+                          #f0abfc 60%,
+                          #fae8ff 80%,
+                          #ffffff 100%)`,
                         backgroundClip: 'text',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
-                        filter: 'drop-shadow(0 1px 4px rgba(168, 85, 247, 0.1))',
-                        animation: 'ethereal-drift 14s ease-in-out infinite reverse'
+                        filter: 'drop-shadow(0 2px 6px rgba(168, 85, 247, 0.15)) drop-shadow(0 0 25px rgba(236, 72, 153, 0.08))',
+                        animation: 'quantum-pulse 8s ease-in-out infinite'
                       }}
                     >
                       AI
@@ -395,24 +452,34 @@ export default function Home() {
                     0 0 32px rgba(139, 92, 246, 0.1)`
                 }}
               >
-                {/* Quantum Field Generator */}
-                <div className="absolute inset-0 -m-4">
+                {/* Quantum Field Generator - Enhanced */}
+                <div className="absolute inset-0 -m-6">
                   {/* Primary Quantum Field */}
                   <div 
                     className="absolute inset-0 rounded-3xl"
                     style={{
-                      background: 'conic-gradient(from 0deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.1), rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.2))',
-                      animation: 'aurora-shift 6s linear infinite',
-                      filter: 'blur(15px)'
+                      background: 'conic-gradient(from 0deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.08), rgba(59, 130, 246, 0.06), rgba(139, 92, 246, 0.15))',
+                      animation: 'aurora-shift 8s linear infinite',
+                      filter: 'blur(20px)'
                     }}
                   />
                   
                   {/* Secondary Resonance */}
                   <div 
-                    className="absolute inset-2 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
+                    className="absolute inset-2 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1500"
                     style={{
-                      background: 'radial-gradient(ellipse, rgba(139, 92, 246, 0.3) 0%, rgba(236, 72, 153, 0.2) 50%, transparent 70%)',
-                      animation: 'ethereal-breathe 2s ease-in-out infinite'
+                      background: 'radial-gradient(ellipse, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.15) 40%, rgba(59, 130, 246, 0.1) 70%, transparent 90%)',
+                      animation: 'divine-resonance 3s ease-in-out infinite'
+                    }}
+                  />
+                  
+                  {/* Tertiary Harmonic */}
+                  <div 
+                    className="absolute inset-4 rounded-3xl opacity-0 group-hover:opacity-80 transition-opacity duration-2000"
+                    style={{
+                      background: 'linear-gradient(45deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.08), rgba(59, 130, 246, 0.06))',
+                      animation: 'ethereal-breathe 4s ease-in-out infinite',
+                      filter: 'blur(8px)'
                     }}
                   />
                 </div>
@@ -514,10 +581,58 @@ export default function Home() {
             </SignInButton>
           </div>
 
-          {/* Floating Elements */}
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-          <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-purple-400/60 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute bottom-1/3 left-1/3 w-1.5 h-1.5 bg-blue-400/50 rounded-full animate-bounce" style={{ animationDelay: '2s' }}></div>
+          {/* Enhanced Floating Elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute rounded-full"
+                style={{
+                  left: `${20 + Math.random() * 60}%`,
+                  top: `${20 + Math.random() * 60}%`,
+                  width: `${1 + Math.random() * 2}px`,
+                  height: `${1 + Math.random() * 2}px`,
+                  background: i % 3 === 0 ? 'rgba(255, 255, 255, 0.6)' : i % 3 === 1 ? 'rgba(139, 92, 246, 0.7)' : 'rgba(236, 72, 153, 0.6)',
+                  animation: `gentle-float ${15 + Math.random() * 10}s ease-in-out infinite`,
+                  animationDelay: `${i * 2}s`,
+                  filter: 'blur(0.5px)',
+                  boxShadow: `0 0 ${8 + Math.random() * 12}px ${i % 3 === 0 ? 'rgba(255, 255, 255, 0.8)' : i % 3 === 1 ? 'rgba(139, 92, 246, 0.6)' : 'rgba(236, 72, 153, 0.6)'}`
+                }}
+              />
+            ))}
+          </div>
+          
+          {/* Ambient Perimeter Glow */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div 
+              className="absolute top-0 left-0 right-0 h-32 opacity-20"
+              style={{
+                background: 'linear-gradient(to bottom, rgba(139, 92, 246, 0.1), transparent)',
+                animation: 'ethereal-breathe 20s ease-in-out infinite'
+              }}
+            />
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-32 opacity-20"
+              style={{
+                background: 'linear-gradient(to top, rgba(236, 72, 153, 0.08), transparent)',
+                animation: 'ethereal-breathe 18s ease-in-out infinite reverse'
+              }}
+            />
+            <div 
+              className="absolute left-0 top-0 bottom-0 w-32 opacity-15"
+              style={{
+                background: 'linear-gradient(to right, rgba(59, 130, 246, 0.06), transparent)',
+                animation: 'ethereal-breathe 22s ease-in-out infinite'
+              }}
+            />
+            <div 
+              className="absolute right-0 top-0 bottom-0 w-32 opacity-15"
+              style={{
+                background: 'linear-gradient(to left, rgba(139, 92, 246, 0.06), transparent)',
+                animation: 'ethereal-breathe 24s ease-in-out infinite reverse'
+              }}
+            />
+          </div>
         </SignedOut>
 
         <SignedIn>
@@ -858,6 +973,43 @@ export default function Home() {
         @keyframes shimmer-flow {
           0% { background-position: -200% 0; }
           100% { background-position: 200% 0; }
+        }
+        
+        @keyframes ethereal-drift {
+          0%, 100% { 
+            transform: translateY(0px) scale(1);
+            filter: brightness(100%) saturate(100%) hue-rotate(0deg);
+          }
+          25% { 
+            transform: translateY(-2px) scale(1.005);
+            filter: brightness(105%) saturate(110%) hue-rotate(2deg);
+          }
+          50% { 
+            transform: translateY(-4px) scale(1.01);
+            filter: brightness(110%) saturate(120%) hue-rotate(5deg);
+          }
+          75% { 
+            transform: translateY(-2px) scale(1.005);
+            filter: brightness(105%) saturate(110%) hue-rotate(2deg);
+          }
+        }
+        
+        @keyframes divine-resonance {
+          0%, 100% { 
+            opacity: 0.8;
+            transform: scale(1) rotate(0deg);
+            filter: blur(0px) brightness(100%);
+          }
+          33% { 
+            opacity: 1;
+            transform: scale(1.02) rotate(1deg);
+            filter: blur(0.5px) brightness(110%);
+          }
+          66% { 
+            opacity: 0.9;
+            transform: scale(1.01) rotate(-0.5deg);
+            filter: blur(0.3px) brightness(105%);
+          }
         }
         
         .bg-gradient-radial {
