@@ -521,49 +521,243 @@ export default function Home() {
         </SignedOut>
 
         <SignedIn>
-          <div className="text-center max-w-4xl mx-auto">
-            {/* Minimalist Welcome Section */}
-            <div className="mb-16">
-              <h1 className="text-5xl md:text-6xl font-light tracking-wide text-white mb-8">
-                <span 
-                  style={{
-                    background: `linear-gradient(135deg, 
-                      #ffffff 0%,
-                      #e2e8f0 50%,
-                      #cbd5e1 100%)`,
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.1))'
-                  }}
-                >
-                  Welcome Back
-                </span>
-              </h1>
-              
-              <div className="w-24 h-px bg-gradient-to-r from-transparent via-slate-400 to-transparent mx-auto mb-8 opacity-60" />
-              
-              <p className="text-xl text-slate-300 font-light tracking-wide max-w-2xl mx-auto leading-relaxed">
-                Your advanced healthcare platform is ready
-              </p>
+          <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+            {/* TRANSCENDENT QUANTUM BACKGROUND REVOLUTION */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {/* Holographic Mesh Network */}
+              <div className="absolute inset-0">
+                <svg className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 1000 1000">
+                  <defs>
+                    <linearGradient id="meshGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#710bff" stopOpacity="0.8" />
+                      <stop offset="50%" stopColor="#1d1427" stopOpacity="0.6" />
+                      <stop offset="100%" stopColor="#710bff" stopOpacity="0.4" />
+                    </linearGradient>
+                    <pattern id="quantumMesh" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                      <circle cx="50" cy="50" r="2" fill="url(#meshGradient)" opacity="0.8">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite" />
+                        <animate attributeName="r" values="1;3;1" dur="6s" repeatCount="indefinite" />
+                      </circle>
+                      <line x1="50" y1="50" x2="150" y2="50" stroke="url(#meshGradient)" strokeWidth="0.5" opacity="0.4">
+                        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="5s" repeatCount="indefinite" />
+                      </line>
+                      <line x1="50" y1="50" x2="50" y2="150" stroke="url(#meshGradient)" strokeWidth="0.5" opacity="0.4">
+                        <animate attributeName="opacity" values="0.2;0.8;0.2" dur="7s" repeatCount="indefinite" />
+                      </line>
+                      <line x1="50" y1="50" x2="150" y2="150" stroke="url(#meshGradient)" strokeWidth="0.3" opacity="0.3">
+                        <animate attributeName="opacity" values="0.1;0.6;0.1" dur="8s" repeatCount="indefinite" />
+                      </line>
+                    </pattern>
+                  </defs>
+                  <rect width="100%" height="100%" fill="url(#quantumMesh)" />
+                </svg>
+              </div>
+
+              {/* Ethereal Light Beams */}
+              <div className="absolute inset-0">
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute opacity-30"
+                    style={{
+                      left: `${20 + i * 15}%`,
+                      top: '-10%',
+                      width: '2px',
+                      height: '120%',
+                      background: `linear-gradient(to bottom, 
+                        transparent 0%, 
+                        rgba(113, 11, 255, ${0.6 + Math.random() * 0.4}) 30%, 
+                        rgba(29, 20, 39, ${0.4 + Math.random() * 0.3}) 70%, 
+                        transparent 100%)`,
+                      transform: `rotate(${-15 + i * 5}deg) translateY(${Math.sin(i) * 20}px)`,
+                      filter: 'blur(1px)',
+                      animation: `gentle-sway ${12 + i * 2}s ease-in-out infinite`,
+                      animationDelay: `${i * 0.8}s`
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Quantum Particles Symphony */}
+              <div className="absolute inset-0">
+                {[...Array(25)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute rounded-full"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      width: `${1 + Math.random() * 3}px`,
+                      height: `${1 + Math.random() * 3}px`,
+                      background: `radial-gradient(circle, 
+                        rgba(113, 11, 255, ${0.9 + Math.random() * 0.1}), 
+                        rgba(29, 20, 39, ${0.5 + Math.random() * 0.3}), 
+                        transparent)`,
+                      animation: `quantum-dance ${15 + Math.random() * 10}s ease-in-out infinite`,
+                      animationDelay: `${Math.random() * 5}s`,
+                      filter: 'blur(0.5px)',
+                      boxShadow: `0 0 ${8 + Math.random() * 12}px rgba(113, 11, 255, 0.7)`
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Crystalline Reflections */}
+              <div className="absolute inset-0">
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute"
+                    style={{
+                      left: `${10 + i * 12}%`,
+                      top: `${20 + Math.sin(i) * 30}%`,
+                      width: `${20 + Math.random() * 40}px`,
+                      height: `${20 + Math.random() * 40}px`,
+                      background: `conic-gradient(from ${i * 45}deg, 
+                        rgba(113, 11, 255, 0.1), 
+                        rgba(29, 20, 39, 0.2), 
+                        rgba(113, 11, 255, 0.1))`,
+                      borderRadius: '50%',
+                      filter: 'blur(2px)',
+                      animation: `crystalline-rotation ${20 + i * 3}s linear infinite`,
+                      animationDelay: `${i * 1.2}s`,
+                      opacity: 0.6
+                    }}
+                  />
+                ))}
+              </div>
             </div>
+
+            {/* REVOLUTIONARY WELCOME EXPERIENCE */}
+            <div className="relative z-10 text-center max-w-6xl mx-auto px-8">
+              {/* Transcendent Title Symphony */}
+              <div className="mb-20">
+                <div className="relative">
+                  <h1 className="text-7xl md:text-8xl lg:text-9xl font-extralight tracking-[0.1em] text-white mb-12 leading-none">
+                    <span 
+                      className="inline-block"
+                      style={{
+                        background: `linear-gradient(135deg, 
+                          rgba(255, 255, 255, 1) 0%,
+                          rgba(113, 11, 255, 0.9) 25%,
+                          rgba(255, 255, 255, 0.8) 50%,
+                          rgba(29, 20, 39, 0.9) 75%,
+                          rgba(255, 255, 255, 1) 100%)`,
+                        backgroundSize: '400% 400%',
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        filter: 'drop-shadow(0 0 40px rgba(113, 11, 255, 0.3))',
+                        animation: 'gradient-shift 8s ease-in-out infinite'
+                      }}
+                    >
+                      Welcome
+                    </span>
+                    <br />
+                    <span 
+                      className="inline-block"
+                      style={{
+                        background: `linear-gradient(135deg, 
+                          rgba(29, 20, 39, 0.9) 0%,
+                          rgba(255, 255, 255, 0.8) 25%,
+                          rgba(113, 11, 255, 0.9) 50%,
+                          rgba(255, 255, 255, 0.8) 75%,
+                          rgba(29, 20, 39, 0.9) 100%)`,
+                        backgroundSize: '400% 400%',
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        filter: 'drop-shadow(0 0 40px rgba(29, 20, 39, 0.5))',
+                        animation: 'gradient-shift 8s ease-in-out infinite reverse'
+                      }}
+                    >
+                      Back
+                    </span>
+                  </h1>
+                  
+                  {/* Signature Gradient Line Revolution */}
+                  <div className="relative mx-auto mb-16" style={{ width: '200px', height: '4px' }}>
+                    <div 
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        background: `linear-gradient(90deg, 
+                          transparent 0%, 
+                          rgba(113, 11, 255, 0.3) 20%, 
+                          rgba(113, 11, 255, 1) 50%, 
+                          rgba(29, 20, 39, 0.8) 80%, 
+                          transparent 100%)`,
+                        filter: 'blur(1px)',
+                        animation: 'signature-pulse 4s ease-in-out infinite'
+                      }}
+                    />
+                    <div 
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        background: `linear-gradient(90deg, 
+                          transparent 0%, 
+                          rgba(255, 255, 255, 0.2) 30%, 
+                          rgba(255, 255, 255, 0.8) 50%, 
+                          rgba(255, 255, 255, 0.2) 70%, 
+                          transparent 100%)`,
+                        animation: 'signature-glow 6s ease-in-out infinite'
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                {/* Revolutionary Healthcare Message */}
+                <div className="relative">
+                  <p className="text-2xl md:text-3xl lg:text-4xl font-light tracking-[0.05em] leading-relaxed max-w-4xl mx-auto mb-8">
+                    <span 
+                      style={{
+                        background: `linear-gradient(135deg, 
+                          rgba(255, 255, 255, 0.95) 0%,
+                          rgba(113, 11, 255, 0.8) 50%,
+                          rgba(255, 255, 255, 0.95) 100%)`,
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.1))'
+                      }}
+                    >
+                      Your advanced healthcare ecosystem
+                    </span>
+                  </p>
+                  <p className="text-xl md:text-2xl font-extralight tracking-wide leading-relaxed max-w-3xl mx-auto">
+                    <span 
+                      style={{
+                        background: `linear-gradient(135deg, 
+                          rgba(255, 255, 255, 0.8) 0%,
+                          rgba(29, 20, 39, 0.9) 50%,
+                          rgba(255, 255, 255, 0.8) 100%)`,
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}
+                    >
+                      awaits your command. Where precision meets innovation,
+                      <br />and every interaction shapes the future of care.
+                    </span>
+                  </p>
+                </div>
+              </div>
             
-            {/* Clean Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 items-center justify-center">
+            {/* TRANSCENDENT ACTION BUTTONS */}
+            <div className="flex flex-col sm:flex-row gap-8 items-center justify-center mt-16">
               <button 
-                className="px-12 py-4 text-lg font-light tracking-[0.2em] transition-all duration-500 ease-out hover:scale-105 hover:-translate-y-1"
+                className="group relative overflow-hidden px-12 py-6 rounded-2xl transition-all duration-700 ease-out transform hover:scale-110 hover:rotate-1"
                 style={{
                   background: `linear-gradient(135deg, 
-                    rgba(30, 41, 59, 0.9) 0%,
-                    rgba(51, 65, 85, 0.8) 100%)`,
-                  border: '1px solid rgba(148, 163, 184, 0.3)',
-                  borderRadius: '2px',
-                  backdropFilter: 'blur(20px)',
+                    rgba(113, 11, 255, 0.8) 0%, 
+                    rgba(29, 20, 39, 0.9) 50%, 
+                    rgba(113, 11, 255, 0.8) 100%)`,
+                  border: '2px solid transparent',
+                  backgroundClip: 'padding-box',
                   boxShadow: `
-                    0 2px 8px rgba(0, 0, 0, 0.3),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.1)`,
-                  color: '#e2e8f0',
-                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
+                    0 0 30px rgba(113, 11, 255, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                    inset 0 -1px 0 rgba(0, 0, 0, 0.2)`,
+                  filter: 'drop-shadow(0 10px 30px rgba(113, 11, 255, 0.3))'
                 }}
                 onClick={async (e) => {
                   e.preventDefault();
@@ -703,7 +897,30 @@ export default function Home() {
                   }
                 }}
               >
-                ENTER DASHBOARD
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                <span className="relative z-10 text-xl font-light tracking-[0.1em] text-white drop-shadow-lg">
+                  Enter Dashboard
+                </span>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/20 to-indigo-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </button>
+              
+              <button 
+                onClick={() => router.push('/reset-onboarding')}
+                className="group relative overflow-hidden px-10 py-5 rounded-xl transition-all duration-500 ease-out transform hover:scale-105"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: `
+                    0 0 20px rgba(255, 255, 255, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1)`
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
+                <span className="relative z-10 text-lg font-light tracking-wide text-white/80 group-hover:text-white transition-colors duration-300">
+                  Reset Journey
+                </span>
               </button>
             </div>
           </div>
