@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 
 interface ClientDashboardProps {
   params: {
@@ -104,7 +104,7 @@ const FloatingCard = ({ children, delay = 0, className = "" }: { children: React
   );
 };
 
-export default function ClientDashboard({ params }: ClientDashboardProps) {
+export default function ClientDashboard() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef });
   
@@ -408,7 +408,7 @@ export default function ClientDashboard({ params }: ClientDashboardProps) {
                 </GradientText>
               </h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                We don't just build AI solutions—we <GradientText className="font-semibold">architect intelligent ecosystems</GradientText> that transform how you operate. Every platform is meticulously designed to deliver <GradientText className="font-semibold">measurable impact</GradientText> and sustainable competitive advantage.
+                We don&apos;t just build AI solutions—we <GradientText className="font-semibold">architect intelligent ecosystems</GradientText> that transform how you operate. Every platform is meticulously designed to deliver <GradientText className="font-semibold">measurable impact</GradientText> and sustainable competitive advantage.
               </p>
             </motion.div>
 
@@ -456,7 +456,7 @@ export default function ClientDashboard({ params }: ClientDashboardProps) {
               whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
               transition={{ delay: 4.2, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             >
-              We'll notify you the moment your <GradientText className="font-semibold">intelligent automation platform</GradientText> is ready to transform your business.
+              We&apos;ll notify you the moment your <GradientText className="font-semibold">intelligent automation platform</GradientText> is ready to transform your business.
             </motion.p>
             
             <motion.div 
@@ -499,7 +499,7 @@ export default function ClientDashboard({ params }: ClientDashboardProps) {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
             >
-              We built our own custom system to run our entire business. Our clients should have one too. We're engineering the next generation of <GradientText className="font-semibold">business intelligence</GradientText>—sophisticated automation that learns, adapts, and delivers <GradientText className="font-semibold">exponential value</GradientText>. Your platform will set new standards for what's possible when human vision meets artificial intelligence.
+              We built our own custom system to run our entire business. Our clients should have one too. We&apos;re engineering the next generation of <GradientText className="font-semibold">business intelligence</GradientText>—sophisticated automation that learns, adapts, and delivers <GradientText className="font-semibold">exponential value</GradientText>. Your platform will set new standards for what&apos;s possible when human vision meets artificial intelligence.
             </motion.p>
             
             <motion.div 
