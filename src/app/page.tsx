@@ -402,7 +402,7 @@ export default function Home() {
                     className="absolute inset-0 rounded-3xl"
                     style={{
                       background: 'conic-gradient(from 0deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.1), rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.2))',
-                      animation: 'aurora-shift 6s linear infinite',
+                      animation: 'aurora-shift 12s linear infinite',
                       filter: 'blur(15px)'
                     }}
                   />
@@ -923,164 +923,11 @@ export default function Home() {
                 </span>
               </button>
             </div>
+            {/* Bottom Ambient Light */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-purple-900/10 to-transparent"></div>
+            </div>
           </div>
         </SignedIn>
-        
-        {/* Bottom Ambient Light */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-purple-900/10 to-transparent"></div>
-        
-        {/* Revolutionary CSS Animations */}
-        <style jsx>{`
-        @keyframes quantum-pulse {
-          0% { 
-            opacity: 0.2; 
-            transform: scale(0.95); 
-            filter: blur(2px);
-          }
-          25% { 
-            opacity: 0.6; 
-            transform: scale(1.02); 
-            filter: blur(1px);
-          }
-          50% { 
-            opacity: 1; 
-            transform: scale(1.08); 
-            filter: blur(0px);
-          }
-          75% { 
-            opacity: 0.6; 
-            transform: scale(1.02); 
-            filter: blur(1px);
-          }
-          100% { 
-            opacity: 0.2; 
-            transform: scale(0.95); 
-            filter: blur(2px);
-          }
-        }
-        
-        @keyframes gentle-float {
-          0% { transform: translateY(0px) rotate(0deg); }
-          25% { transform: translateY(-8px) rotate(1deg); }
-          50% { transform: translateY(-15px) rotate(0deg); }
-          75% { transform: translateY(-8px) rotate(-1deg); }
-          100% { transform: translateY(0px) rotate(0deg); }
-        }
-        
-        @keyframes subtle-glow {
-          0%, 100% { 
-            filter: brightness(1) saturate(1) hue-rotate(0deg); 
-            box-shadow: 0 0 20px rgba(113, 11, 255, 0.3);
-          }
-          33% { 
-            filter: brightness(1.15) saturate(1.3) hue-rotate(10deg); 
-            box-shadow: 0 0 40px rgba(147, 51, 234, 0.4);
-          }
-          66% { 
-            filter: brightness(1.1) saturate(1.2) hue-rotate(-5deg); 
-            box-shadow: 0 0 30px rgba(192, 132, 252, 0.35);
-          }
-        }
-        
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        
-        @keyframes orbital-dance {
-          0% { 
-            transform: rotate(0deg) translateX(100px) rotate(0deg);
-            opacity: 0.4;
-          }
-          50% { 
-            opacity: 1;
-          }
-          100% { 
-            transform: rotate(360deg) translateX(100px) rotate(-360deg);
-            opacity: 0.4;
-          }
-        }
-        
-        @keyframes infinity-pulse {
-          0%, 100% { 
-            stroke-width: 4;
-            opacity: 0.8;
-            filter: blur(1px) drop-shadow(0 0 10px rgba(139,92,246,0.5));
-          }
-          50% { 
-            stroke-width: 6;
-            opacity: 1;
-            filter: blur(2px) drop-shadow(0 0 20px rgba(139,92,246,0.8));
-          }
-        }
-        
-        @keyframes infinity-flow {
-          0% { opacity: 0; transform: scale(0.5); }
-          10% { opacity: 1; transform: scale(1); }
-          90% { opacity: 1; transform: scale(1); }
-          100% { opacity: 0; transform: scale(0.5); }
-        }
-        
-        @keyframes infinity-counter-flow {
-          0% { opacity: 0; transform: scale(0.3); }
-          15% { opacity: 0.8; transform: scale(1); }
-          85% { opacity: 0.8; transform: scale(1); }
-          100% { opacity: 0; transform: scale(0.3); }
-        }
-        
-        @keyframes orbital-spin {
-          0% { transform: rotate(0deg); stroke-dashoffset: 0; }
-          100% { transform: rotate(360deg); stroke-dashoffset: -100; }
-        }
-        
-        @keyframes quantum-twinkle {
-          0%, 100% { 
-            opacity: 0.2; 
-            transform: scale(0.5);
-            filter: blur(0.5px);
-          }
-          25% { 
-            opacity: 0.8; 
-            transform: scale(1.2);
-            filter: blur(0px);
-          }
-          50% { 
-            opacity: 1; 
-            transform: scale(1.5);
-            filter: blur(1px);
-          }
-          75% { 
-            opacity: 0.6; 
-            transform: scale(1);
-            filter: blur(0.5px);
-          }
-        }
-        
-        @keyframes ethereal-breathe {
-          0%, 100% { 
-            transform: scale(1);
-            opacity: 0.3;
-          }
-          50% { 
-            transform: scale(1.1);
-            opacity: 0.6;
-          }
-        }
-        
-        @keyframes aurora-shift {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes shimmer-flow {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        
-        .bg-gradient-radial {
-          background: radial-gradient(circle, var(--tw-gradient-stops));
-        }
-      `}</style>
       </div>
     </div>
   );

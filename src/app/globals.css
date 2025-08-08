@@ -130,7 +130,6 @@
     opacity: 0.3;
   }
 }
-}
 
 @keyframes gradient-shift {
   0%, 100% { background-position: 0% 50%; }
@@ -195,16 +194,16 @@
     filter: hue-rotate(0deg) brightness(100%);
   }
   25% {
-    transform: rotate(90deg) scale(1.02);
-    filter: hue-rotate(90deg) brightness(110%);
+    transform: rotate(15deg) scale(1.005);
+    filter: hue-rotate(15deg) brightness(102%);
   }
   50% {
-    transform: rotate(180deg) scale(0.98);
-    filter: hue-rotate(180deg) brightness(120%);
+    transform: rotate(30deg) scale(0.998);
+    filter: hue-rotate(30deg) brightness(104%);
   }
   75% {
-    transform: rotate(270deg) scale(1.01);
-    filter: hue-rotate(270deg) brightness(110%);
+    transform: rotate(45deg) scale(1.002);
+    filter: hue-rotate(45deg) brightness(103%);
   }
 }
 
